@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: backend
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+    open-in-view: false
+
+    properties:
+      hibernate:
+        default_batch_fetch_size: 500
+        format_sql: true
+        highlight_sql: true
+
+  output:
+    ansi:
+      enabled: ALWAYS
+
+logging:
+  level:
+    org:
+      hibernate.SQL: debug
+
+    com:
+      cloudbox:
+        backend: debug
