@@ -1,9 +1,7 @@
 package com.cloudbox.backend.member.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.cloudbox.backend.common.constants.Role;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,13 +24,18 @@ public class Member {
     @Column(nullable = false)
     private String email;
 
-    private Member(String username, String password, String email) {
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, updatable = false)
+    private Role role;
+
+    private Member(String username, String password, String email, Role role) {
         this.username = username;
         this.password = password;
         this.email = email;
+        this.role = role;
     }
 
-    public static Member createMember(String username, String password, String email) {
-        return new Member(username, password, email);
+    public static Member createMember(String username, String password, String email, Role role) {
+        return new Member(username, password, email, role);
     }
 }

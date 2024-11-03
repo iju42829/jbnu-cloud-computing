@@ -1,5 +1,6 @@
 package com.cloudbox.backend.member.service;
 
+import com.cloudbox.backend.common.constants.Role;
 import com.cloudbox.backend.member.domain.Member;
 import com.cloudbox.backend.member.dto.request.MemberCreateRequest;
 import com.cloudbox.backend.member.repository.MemberRepository;
@@ -20,7 +21,8 @@ public class MemberServiceImpl implements MemberService {
     public Long signUp(MemberCreateRequest memberCreateRequest) {
         Member member = Member.createMember(memberCreateRequest.getUsername(),
                 passwordEncoder.encode(memberCreateRequest.getPassword()),
-                memberCreateRequest.getEmail());
+                memberCreateRequest.getEmail(),
+                Role.USER);
 
         Member savedId = memberRepository.save(member);
 
