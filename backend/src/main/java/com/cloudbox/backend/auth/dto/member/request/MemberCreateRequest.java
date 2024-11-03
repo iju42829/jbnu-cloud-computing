@@ -19,12 +19,10 @@ public class MemberCreateRequest {
     @Schema(description = "사용자 아이디")
     private String username;
 
-    @NotBlank
     @Size(min = 8, max = 15)
     @Schema(description = "비밀번호")
     private String password;
 
-    @NotBlank
     @Size(min = 8, max = 15)
     @Schema(description = "비밀번호 확인")
     private String confirmPassword;

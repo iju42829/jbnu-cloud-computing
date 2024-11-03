@@ -1,5 +1,6 @@
 package com.cloudbox.backend.auth.controller;
 
+import com.cloudbox.backend.auth.controller.validator.MemberCreateRequestValidator;
 import com.cloudbox.backend.auth.dto.member.request.MemberCreateRequest;
 import com.cloudbox.backend.auth.service.MemberService;
 import com.cloudbox.backend.common.dto.DataResponse;
@@ -16,17 +17,22 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "회원가입", description = "회원가입 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class SignController  {
+
     private final MemberService memberService;
+    private final MemberCreateRequestValidator memberCreateRequestValidator;
+
+    @InitBinder
+    public void init(WebDataBinder dataBinder) {
+        dataBinder.addValidators(memberCreateRequestValidator);
+    }
 
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "회원 가입 성공"),
