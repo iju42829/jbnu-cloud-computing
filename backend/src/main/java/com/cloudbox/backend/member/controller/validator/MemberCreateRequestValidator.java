@@ -1,6 +1,6 @@
-package com.cloudbox.backend.auth.controller.validator;
+package com.cloudbox.backend.member.controller.validator;
 
-import com.cloudbox.backend.auth.dto.member.request.MemberCreateRequest;
+import com.cloudbox.backend.member.dto.request.MemberCreateRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;

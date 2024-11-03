@@ -1,4 +1,4 @@
-package com.cloudbox.backend.auth.dto.member.request;
+package com.cloudbox.backend.member.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;

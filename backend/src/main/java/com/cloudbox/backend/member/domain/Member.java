@@ -1,4 +1,4 @@
-package com.cloudbox.backend.auth.domain;
+package com.cloudbox.backend.member.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

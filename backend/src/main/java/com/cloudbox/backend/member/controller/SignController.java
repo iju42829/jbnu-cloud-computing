@@ -1,8 +1,8 @@
-package com.cloudbox.backend.auth.controller;
+package com.cloudbox.backend.member.controller;
 
-import com.cloudbox.backend.auth.controller.validator.MemberCreateRequestValidator;
-import com.cloudbox.backend.auth.dto.member.request.MemberCreateRequest;
-import com.cloudbox.backend.auth.service.MemberService;
+import com.cloudbox.backend.member.controller.validator.MemberCreateRequestValidator;
+import com.cloudbox.backend.member.dto.request.MemberCreateRequest;
+import com.cloudbox.backend.member.service.MemberService;
 import com.cloudbox.backend.common.dto.DataResponse;
 import com.cloudbox.backend.common.dto.Response;
 import com.cloudbox.backend.common.exception.InvalidRequestException;

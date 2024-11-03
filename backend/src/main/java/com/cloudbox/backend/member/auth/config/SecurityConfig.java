@@ -1,4 +1,4 @@
-package com.cloudbox.backend.auth.config;
+package com.cloudbox.backend.member.auth.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

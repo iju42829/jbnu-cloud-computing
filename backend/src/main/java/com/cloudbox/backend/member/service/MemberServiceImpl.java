@@ -1,8 +1,8 @@
-package com.cloudbox.backend.auth.service;
+package com.cloudbox.backend.member.service;
 
-import com.cloudbox.backend.auth.domain.Member;
-import com.cloudbox.backend.auth.dto.member.request.MemberCreateRequest;
-import com.cloudbox.backend.auth.repository.MemberRepository;
+import com.cloudbox.backend.member.domain.Member;
+import com.cloudbox.backend.member.dto.request.MemberCreateRequest;
+import com.cloudbox.backend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
