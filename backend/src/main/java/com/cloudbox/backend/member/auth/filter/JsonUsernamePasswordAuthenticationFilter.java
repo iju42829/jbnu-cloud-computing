@@ -40,7 +40,7 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         if (request.getContentType() == null || !request.getContentType().equals(CONTENT_TYPE)) {
-            throw new AuthenticationServiceException("Authentication Content-Type not supported: " + request.getContentType());
+            throw new AuthenticationServiceException("지원되지 않는 Content-Type 입니다: " + request.getContentType());
         }
 
         try {
@@ -49,7 +49,7 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
             String password = loginRequest.getPassword();
 
             if (username == null || password == null) {
-                throw new AuthenticationServiceException("Username or password is missing");
+                throw new AuthenticationServiceException("사용자 이름 또는 비밀번호가 누락되었습니다.");
             }
 
             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
@@ -58,7 +58,7 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
             return this.getAuthenticationManager().authenticate(authRequest);
 
         } catch (IOException e) {
-            throw new AuthenticationServiceException("Failed to parse JSON request: " + e.getMessage(), e);
+            throw new AuthenticationServiceException("JSON 요청을 파싱하는 데 실패했습니다: " + e.getMessage(), e);
         }
     }
 }
