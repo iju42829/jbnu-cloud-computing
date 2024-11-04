@@ -23,6 +23,7 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final CorsConfig corsConfig;
     private final CustomAuthenticationSuccessHandler successHandler;
     private final CustomAuthenticationFailureHandler failureHandler;
 
@@ -57,6 +58,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/test/admin").hasRole(Role.ADMIN.getRoleName())
 
                         .anyRequest().authenticated());
+
+        http
+                .cors(cors -> cors
+                        .configurationSource(corsConfig.corsConfigurationSource()));
 
         http
                 .csrf(AbstractHttpConfigurer::disable);
