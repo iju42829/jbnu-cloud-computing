@@ -2,6 +2,8 @@ package com.cloudbox.backend.member.auth.config;
 
 import com.cloudbox.backend.common.constants.Role;
 import com.cloudbox.backend.member.auth.filter.JsonUsernamePasswordAuthenticationFilter;
+import com.cloudbox.backend.member.auth.handler.CustomAccessDeniedHandler;
+import com.cloudbox.backend.member.auth.handler.CustomAuthenticationEntryPointHandler;
 import com.cloudbox.backend.member.auth.handler.CustomAuthenticationFailureHandler;
 import com.cloudbox.backend.member.auth.handler.CustomAuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,8 @@ public class SecurityConfig {
     private final CorsConfig corsConfig;
     private final CustomAuthenticationSuccessHandler successHandler;
     private final CustomAuthenticationFailureHandler failureHandler;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final CustomAuthenticationEntryPointHandler entryPointHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -49,6 +53,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
         http
                 .addFilterAt(jsonUsernamePasswordAuthenticationFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
+
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(accessDeniedHandler)
+                        .authenticationEntryPoint(entryPointHandler))
 
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/api/sign-up").permitAll()
