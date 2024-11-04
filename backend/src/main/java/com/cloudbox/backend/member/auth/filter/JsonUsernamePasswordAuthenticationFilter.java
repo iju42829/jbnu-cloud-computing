@@ -1,9 +1,12 @@
 package com.cloudbox.backend.member.auth.filter;
 
+import com.cloudbox.backend.member.auth.constants.AuthConstants;
 import com.cloudbox.backend.member.auth.dto.LoginRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,28 +21,32 @@ import java.io.IOException;
 
 public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private static final String DEFAULT_LOGIN_REQUEST_URL = "/api/login";
-    private static final String HTTP_METHOD = "POST";
-    private static final String CONTENT_TYPE = "application/json";
+    private final ObjectMapper objectMapper;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    public JsonUsernamePasswordAuthenticationFilter(AuthenticationSuccessHandler successHandler,
+    public JsonUsernamePasswordAuthenticationFilter(ObjectMapper objectMapper,
+                                                    AuthenticationSuccessHandler successHandler,
                                                     AuthenticationFailureHandler failureHandler,
                                                     AuthenticationManager authenticationManager,
                                                     HttpSessionSecurityContextRepository httpSessionSecurityContextRepository) {
+
+        this.objectMapper = objectMapper;
 
         setAuthenticationSuccessHandler(successHandler);
         setAuthenticationFailureHandler(failureHandler);
         setAuthenticationManager(authenticationManager);
         setSecurityContextRepository(httpSessionSecurityContextRepository);
 
-        setFilterProcessesUrl(DEFAULT_LOGIN_REQUEST_URL);
+        setFilterProcessesUrl(AuthConstants.DEFAULT_LOGIN_REQUEST_URL);
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        if (request.getContentType() == null || !request.getContentType().equals(CONTENT_TYPE)) {
+
+        if (!request.getMethod().equalsIgnoreCase(HttpMethod.POST.name())) {
+            throw new AuthenticationServiceException("지원되지 않는 HTTP 메서드입니다: " + request.getMethod());
+        }
+
+        if (request.getContentType() == null || !request.getContentType().equals(MediaType.APPLICATION_JSON_VALUE)) {
             throw new AuthenticationServiceException("지원되지 않는 Content-Type 입니다: " + request.getContentType());
         }
 

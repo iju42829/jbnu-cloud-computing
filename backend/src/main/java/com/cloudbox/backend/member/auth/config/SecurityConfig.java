@@ -6,6 +6,7 @@ import com.cloudbox.backend.member.auth.handler.CustomAccessDeniedHandler;
 import com.cloudbox.backend.member.auth.handler.CustomAuthenticationEntryPointHandler;
 import com.cloudbox.backend.member.auth.handler.CustomAuthenticationFailureHandler;
 import com.cloudbox.backend.member.auth.handler.CustomAuthenticationSuccessHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,8 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private ObjectMapper objectMapper;
+
     private final CorsConfig corsConfig;
     private final CustomAuthenticationSuccessHandler successHandler;
     private final CustomAuthenticationFailureHandler failureHandler;
@@ -43,7 +46,8 @@ public class SecurityConfig {
 
     @Bean
     public JsonUsernamePasswordAuthenticationFilter jsonUsernamePasswordAuthenticationFilter(AuthenticationManager authenticationManager) {
-        return new JsonUsernamePasswordAuthenticationFilter(successHandler,
+        return new JsonUsernamePasswordAuthenticationFilter(objectMapper,
+                successHandler,
                 failureHandler,
                 authenticationManager,
                 new HttpSessionSecurityContextRepository());
