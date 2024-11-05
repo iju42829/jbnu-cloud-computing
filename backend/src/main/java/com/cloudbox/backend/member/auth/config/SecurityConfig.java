@@ -2,10 +2,7 @@ package com.cloudbox.backend.member.auth.config;
 
 import com.cloudbox.backend.common.constants.Role;
 import com.cloudbox.backend.member.auth.filter.JsonUsernamePasswordAuthenticationFilter;
-import com.cloudbox.backend.member.auth.handler.CustomAccessDeniedHandler;
-import com.cloudbox.backend.member.auth.handler.CustomAuthenticationEntryPointHandler;
-import com.cloudbox.backend.member.auth.handler.CustomAuthenticationFailureHandler;
-import com.cloudbox.backend.member.auth.handler.CustomAuthenticationSuccessHandler;
+import com.cloudbox.backend.member.auth.handler.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,18 +18,22 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 
+import static com.cloudbox.backend.member.auth.constants.AuthConstants.*;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     private final CorsConfig corsConfig;
     private final CustomAuthenticationSuccessHandler successHandler;
     private final CustomAuthenticationFailureHandler failureHandler;
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final CustomAuthenticationEntryPointHandler entryPointHandler;
+
+    private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -87,6 +88,14 @@ public class SecurityConfig {
                 .sessionManagement((auth) -> auth
                         .sessionFixation()
                         .changeSessionId());
+
+        http
+                .logout(logout -> logout
+                        .logoutUrl(DEFAULT_LOGOUT_REQUEST_URL)
+                        .deleteCookies(SESSION_COOKIE_NAME)
+                        .invalidateHttpSession(true)
+                        .logoutSuccessHandler(customLogoutSuccessHandler)
+                        .permitAll());
 
         return http.build();
     }
