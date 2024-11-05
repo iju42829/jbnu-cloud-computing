@@ -2,6 +2,11 @@ package com.cloudbox.backend.member.auth.filter;
 
 import com.cloudbox.backend.member.auth.constants.AuthConstants;
 import com.cloudbox.backend.member.auth.dto.LoginRequest;
+import com.cloudbox.backend.member.auth.exception.JsonParsingException;
+import com.cloudbox.backend.member.auth.exception.MissingCredentialsException;
+import com.cloudbox.backend.member.auth.exception.UnsupportedContentTypeException;
+import com.cloudbox.backend.member.auth.exception.UnsupportedHttpMethodException;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -43,11 +48,11 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
         if (!request.getMethod().equalsIgnoreCase(HttpMethod.POST.name())) {
-            throw new AuthenticationServiceException("지원되지 않는 HTTP 메서드입니다: " + request.getMethod());
+            throw new UnsupportedHttpMethodException("지원되지 않는 HTTP 메서드입니다: " + request.getMethod());
         }
 
         if (request.getContentType() == null || !request.getContentType().equals(MediaType.APPLICATION_JSON_VALUE)) {
-            throw new AuthenticationServiceException("지원되지 않는 Content-Type 입니다: " + request.getContentType());
+            throw new UnsupportedContentTypeException("지원되지 않는 Content-Type 입니다: " + request.getContentType());
         }
 
         try {
@@ -56,7 +61,7 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
             String password = loginRequest.getPassword();
 
             if (username == null || password == null) {
-                throw new AuthenticationServiceException("사용자 이름 또는 비밀번호가 누락되었습니다.");
+                throw new MissingCredentialsException("사용자 이름 또는 비밀번호가 누락되었습니다.");
             }
 
             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
@@ -65,7 +70,7 @@ public class JsonUsernamePasswordAuthenticationFilter extends UsernamePasswordAu
             return this.getAuthenticationManager().authenticate(authRequest);
 
         } catch (IOException e) {
-            throw new AuthenticationServiceException("JSON 요청을 파싱하는 데 실패했습니다: " + e.getMessage(), e);
+            throw new JsonParsingException("JSON 요청을 파싱하는 데 실패했습니다: " + e.getMessage(), e);
         }
     }
 }
