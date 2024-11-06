@@ -21,7 +21,7 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        Response responseResult = new Response(HttpServletResponse.SC_OK, "로그아웃에 성공했습니다.");
+        Response<?> responseResult = Response.createResponseWithoutData(HttpServletResponse.SC_OK, "로그아웃에 성공했습니다.");
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

@@ -25,25 +25,25 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        Response responseResult;
+        Response<?> responseResult;
 
         if (exception instanceof MissingCredentialsException) {
-           responseResult = new Response(HttpServletResponse.SC_BAD_REQUEST, exception.getMessage());
+           responseResult = Response.createResponseWithoutData(HttpServletResponse.SC_BAD_REQUEST, exception.getMessage());
            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
         } else if (exception instanceof UnsupportedHttpMethodException) {
-            responseResult = new Response(HttpServletResponse.SC_METHOD_NOT_ALLOWED, exception.getMessage());
+            responseResult = Response.createResponseWithoutData(HttpServletResponse.SC_METHOD_NOT_ALLOWED, exception.getMessage());
             response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
 
         } else if (exception instanceof UnsupportedContentTypeException) {
-            responseResult = new Response(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, exception.getMessage());
+            responseResult = Response.createResponseWithoutData(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, exception.getMessage());
             response.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
 
         } else if (exception instanceof JsonParsingException) {
-            responseResult = new Response(HttpServletResponse.SC_BAD_REQUEST, exception.getMessage());
+            responseResult = Response.createResponseWithoutData(HttpServletResponse.SC_BAD_REQUEST, exception.getMessage());
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         } else {
-            responseResult = new Response(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage());
+            responseResult = Response.createResponseWithoutData(HttpServletResponse.SC_UNAUTHORIZED, exception.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
 

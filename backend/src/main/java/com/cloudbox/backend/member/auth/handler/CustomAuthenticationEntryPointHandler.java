@@ -21,7 +21,7 @@ public class CustomAuthenticationEntryPointHandler implements AuthenticationEntr
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        Response responseResult = new Response(HttpServletResponse.SC_UNAUTHORIZED, "로그인이 필요합니다. 로그인 후 다시 시도해 주세요.");
+        Response<?> responseResult = Response.createResponseWithoutData(HttpServletResponse.SC_UNAUTHORIZED, "로그인이 필요합니다. 로그인 후 다시 시도해 주세요.");
 
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
