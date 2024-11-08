@@ -69,6 +69,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/api/test/user").hasRole(Role.USER.getRoleName())
                         .requestMatchers("/api/test/admin").hasRole(Role.ADMIN.getRoleName())
+                        .requestMatchers("/api/test").permitAll()
 
                         .anyRequest().authenticated());
 
