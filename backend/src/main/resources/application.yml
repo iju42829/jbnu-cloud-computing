@@ -32,3 +32,6 @@ logging:
     com:
       cloudbox:
         backend: debug
+
+aws:
+  bucket-name: ${BUCKET_NAME}
