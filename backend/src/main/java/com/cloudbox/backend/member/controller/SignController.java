@@ -1,5 +1,7 @@
 package com.cloudbox.backend.member.controller;
 
+import com.cloudbox.backend.file.dto.request.FolderCreateRequest;
+import com.cloudbox.backend.file.service.FolderService;
 import com.cloudbox.backend.member.controller.validator.MemberCreateRequestValidator;
 import com.cloudbox.backend.member.dto.request.MemberCreateRequest;
 import com.cloudbox.backend.member.service.MemberService;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 public class SignController  {
 
     private final MemberService memberService;
+    private final FolderService folderService;
     private final MemberCreateRequestValidator memberCreateRequestValidator;
 
     @InitBinder
@@ -44,7 +47,9 @@ public class SignController  {
             throw new InvalidRequestException("회원 가입 요청 값이 올바르지 않습니다. 다시 확인해 주세요.", bindingResult);
         }
 
-        memberService.signUp(memberCreateRequest);
+        Long savedMemberId = memberService.signUp(memberCreateRequest);
+
+        folderService.createRootFolder(savedMemberId, new FolderCreateRequest(memberCreateRequest.getUsername()));
 
         return new ResponseEntity<>(Response.createResponseWithoutData(HttpStatus.CREATED.value(), "회원가입이 성공적으로 완료되었습니다."),
                 HttpStatus.CREATED);
