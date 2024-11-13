@@ -3,6 +3,7 @@ package com.cloudbox.backend.file.service;
 import com.cloudbox.backend.common.dto.MemberSessionDto;
 import com.cloudbox.backend.file.domain.Folder;
 import com.cloudbox.backend.file.dto.request.FolderCreateRequest;
+import com.cloudbox.backend.file.exception.FolderNotFoundException;
 import com.cloudbox.backend.file.repository.FolderRepository;
 import com.cloudbox.backend.member.domain.Member;
 import com.cloudbox.backend.member.service.MemberService;
@@ -23,7 +24,7 @@ public class FolderService {
     public String getFullFolderPathById(Long folderId) {
         Folder folder = folderRepository
                 .findById(folderId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(FolderNotFoundException::new);
 
         return folder.buildFullFolderPath();
     }
@@ -31,7 +32,7 @@ public class FolderService {
     public Long createFolder(Long parentFolderId, FolderCreateRequest folderCreateRequest, MemberSessionDto memberSessionDto) {
         Member member = memberService.getMemberEntityByUsername(memberSessionDto.getUsername());
 
-        Folder parentFolder = folderRepository.findById(parentFolderId).orElseThrow(RuntimeException::new);
+        Folder parentFolder = folderRepository.findById(parentFolderId).orElseThrow(FolderNotFoundException::new);
 
         Folder folder = Folder.createFolder(folderCreateRequest.getName(), parentFolder, member);
 
