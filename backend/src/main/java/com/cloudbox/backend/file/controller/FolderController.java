@@ -3,6 +3,7 @@ package com.cloudbox.backend.file.controller;
 import com.cloudbox.backend.common.argumentResolver.annotation.Login;
 import com.cloudbox.backend.common.dto.MemberSessionDto;
 import com.cloudbox.backend.common.dto.Response;
+import com.cloudbox.backend.common.exception.InvalidRequestException;
 import com.cloudbox.backend.file.dto.request.FolderCreateRequest;
 import com.cloudbox.backend.file.service.FolderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +14,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,8 +32,13 @@ public class FolderController {
     })
     @PostMapping("/{parentFolderId}")
     public ResponseEntity<Response<?>> addFolder(@PathVariable Long parentFolderId,
-                                                 @RequestBody FolderCreateRequest folderCreateRequest,
-                                                 @Login MemberSessionDto memberSessionDto) {
+                                                 @Login MemberSessionDto memberSessionDto,
+                                                 @Validated @RequestBody FolderCreateRequest folderCreateRequest,
+                                                 BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            throw new InvalidRequestException("폴더 생성 요청 값이 올바르지 않습니다. 다시 확인해 주세요.", bindingResult);
+        }
 
         Long folder = folderService.createFolder(parentFolderId, folderCreateRequest, memberSessionDto);
 
