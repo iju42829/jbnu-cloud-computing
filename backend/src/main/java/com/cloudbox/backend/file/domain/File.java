@@ -19,17 +19,22 @@ public class File {
     @JoinColumn(name = "member_id", nullable = false, updatable = false)
     private Member member;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "folder_id", nullable = false)
+    private Folder folder;
+
     private String fileName;
 
     private String filePath;
 
-    private File(Member member, String fileName, String filePath) {
+    private File(Member member, String fileName, String filePath, Folder folder) {
         this.member = member;
         this.fileName = fileName;
         this.filePath = filePath;
+        this.folder = folder;
     }
 
-    public static File createFile(Member member, String fileName, String filePath) {
-        return new File(member, fileName, filePath);
+    public static File createFile(Member member, String fileName, String filePath, Folder folder) {
+        return new File(member, fileName, filePath, folder);
     }
 }

@@ -31,7 +31,7 @@ public class S3StorageService {
 
         String savedRealFilePath = fullFolderPath + uploadFile.getOriginalFilename();
 
-        Long savedFileId = fileService.createFile(memberSessionDto, uploadFile.getOriginalFilename(), savedRealFilePath);
+        Long savedFileId = fileService.createFile(memberSessionDto, uploadFile.getOriginalFilename(), savedRealFilePath, folderId);
 
         try {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
