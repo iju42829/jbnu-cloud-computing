@@ -1,7 +1,6 @@
 package com.cloudbox.backend.member.controller;
 
 import com.cloudbox.backend.file.dto.request.FolderCreateRequest;
-import com.cloudbox.backend.file.service.impl.FolderService;
 import com.cloudbox.backend.file.service.interfaces.command.FolderCommandService;
 import com.cloudbox.backend.member.controller.validator.MemberCreateRequestValidator;
 import com.cloudbox.backend.member.dto.request.MemberCreateRequest;
