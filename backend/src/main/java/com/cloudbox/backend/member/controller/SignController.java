@@ -1,7 +1,8 @@
 package com.cloudbox.backend.member.controller;
 
 import com.cloudbox.backend.file.dto.request.FolderCreateRequest;
-import com.cloudbox.backend.file.service.FolderService;
+import com.cloudbox.backend.file.service.impl.FolderService;
+import com.cloudbox.backend.file.service.interfaces.command.FolderCommandService;
 import com.cloudbox.backend.member.controller.validator.MemberCreateRequestValidator;
 import com.cloudbox.backend.member.dto.request.MemberCreateRequest;
 import com.cloudbox.backend.member.service.MemberService;
@@ -28,7 +29,7 @@ import org.springframework.web.bind.annotation.*;
 public class SignController  {
 
     private final MemberService memberService;
-    private final FolderService folderService;
+    private final FolderCommandService folderCommandService;
     private final MemberCreateRequestValidator memberCreateRequestValidator;
 
     @InitBinder
@@ -49,7 +50,7 @@ public class SignController  {
 
         Long savedMemberId = memberService.signUp(memberCreateRequest);
 
-        folderService.createRootFolder(savedMemberId, new FolderCreateRequest(memberCreateRequest.getUsername()));
+        folderCommandService.createRootFolder(savedMemberId, new FolderCreateRequest(memberCreateRequest.getUsername()));
 
         return new ResponseEntity<>(Response.createResponseWithoutData(HttpStatus.CREATED.value(), "회원가입이 성공적으로 완료되었습니다."),
                 HttpStatus.CREATED);

@@ -1,11 +1,11 @@
-package com.cloudbox.backend.file.service;
+package com.cloudbox.backend.file.service.impl.command;
 
 import com.cloudbox.backend.common.dto.MemberSessionDto;
 import com.cloudbox.backend.file.domain.Folder;
 import com.cloudbox.backend.file.dto.request.FolderCreateRequest;
-import com.cloudbox.backend.file.dto.response.FolderResponse;
 import com.cloudbox.backend.file.exception.FolderNotFoundException;
 import com.cloudbox.backend.file.repository.FolderRepository;
+import com.cloudbox.backend.file.service.interfaces.command.FolderCommandService;
 import com.cloudbox.backend.member.domain.Member;
 import com.cloudbox.backend.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -13,34 +13,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class FolderService {
+public class FolderCommandServiceImpl implements FolderCommandService {
 
     private final FolderRepository folderRepository;
     private final MemberService memberService;
-
-    public String getFullFolderPathById(Long folderId) {
-        Folder folder = folderRepository
-                .findById(folderId)
-                .orElseThrow(FolderNotFoundException::new);
-
-        return folder.buildFullFolderPath();
-    }
-
-    public List<FolderResponse> getFolderResponseById(Long folderId, MemberSessionDto memberSessionDto) {
-        Folder folder = folderRepository.findById(folderId).orElseThrow(FolderNotFoundException::new);
-
-        List<Folder> childFolders = folder.getChildFolders();
-
-        return childFolders.stream()
-                .map(FolderResponse::fromFolder)
-                .toList();
-    }
 
     public Long createFolder(Long parentFolderId, FolderCreateRequest folderCreateRequest, MemberSessionDto memberSessionDto) {
         Member member = memberService.getMemberEntityByUsername(memberSessionDto.getUsername());

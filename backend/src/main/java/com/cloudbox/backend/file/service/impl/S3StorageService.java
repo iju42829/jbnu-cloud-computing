@@ -1,6 +1,8 @@
-package com.cloudbox.backend.file.service;
+package com.cloudbox.backend.file.service.impl;
 
 import com.cloudbox.backend.common.dto.MemberSessionDto;
+import com.cloudbox.backend.file.service.interfaces.command.FileCommandService;
+import com.cloudbox.backend.file.service.interfaces.query.FolderQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,18 +22,18 @@ import java.io.IOException;
 public class S3StorageService {
 
     private final S3Client s3Client;
-    private final FileService fileService;
-    private final FolderService folderService;
+    private final FileCommandService fileCommandService;
+    private final FolderQueryService folderQueryService;
 
     @Value("${aws.bucket-name}")
     private String bucketName;
     
     public Long fileUpload(MemberSessionDto memberSessionDto, MultipartFile uploadFile, Long folderId) {
-        String fullFolderPath = folderService.getFullFolderPathById(folderId);
+        String fullFolderPath = folderQueryService.getFullFolderPathById(folderId);
 
         String savedRealFilePath = fullFolderPath + uploadFile.getOriginalFilename();
 
-        Long savedFileId = fileService.createFile(memberSessionDto, uploadFile.getOriginalFilename(), savedRealFilePath, folderId);
+        Long savedFileId = fileCommandService.createFile(memberSessionDto, uploadFile.getOriginalFilename(), savedRealFilePath, folderId);
 
         try {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()

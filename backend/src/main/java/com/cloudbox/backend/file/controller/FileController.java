@@ -3,7 +3,7 @@ package com.cloudbox.backend.file.controller;
 import com.cloudbox.backend.common.argumentResolver.annotation.Login;
 import com.cloudbox.backend.common.dto.MemberSessionDto;
 import com.cloudbox.backend.common.dto.Response;
-import com.cloudbox.backend.file.service.S3StorageService;
+import com.cloudbox.backend.file.service.impl.S3StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -6,8 +6,8 @@ import com.cloudbox.backend.common.dto.Response;
 import com.cloudbox.backend.file.dto.response.FileResponse;
 import com.cloudbox.backend.file.dto.response.FolderResponse;
 import com.cloudbox.backend.file.dto.response.MainPageResponse;
-import com.cloudbox.backend.file.service.FileService;
-import com.cloudbox.backend.file.service.FolderService;
+import com.cloudbox.backend.file.service.interfaces.query.FileQueryService;
+import com.cloudbox.backend.file.service.interfaces.query.FolderQueryService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,13 +26,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MainController {
 
-    private final FileService fileService;
-    private final FolderService folderService;
+    private final FileQueryService fileQueryService;
+    private final FolderQueryService folderQueryService;
 
     @GetMapping
     public ResponseEntity<Response<MainPageResponse>> mainPage(@RequestParam(required = false) Long folderId, @Login MemberSessionDto memberSessionDto) {
-        List<FileResponse> fileResponses = fileService.getFileResponsesByFolder(folderId, memberSessionDto);
-        List<FolderResponse> folderResponses = folderService.getFolderResponseById(folderId, memberSessionDto);
+        List<FileResponse> fileResponses = fileQueryService.getFileResponsesByFolder(folderId, memberSessionDto);
+        List<FolderResponse> folderResponses = folderQueryService.getFolderResponseById(folderId, memberSessionDto);
 
         return new ResponseEntity<>(Response.createResponse(HttpServletResponse.SC_OK, "파일과 폴더 조회에 성공했습니다.", new MainPageResponse(folderResponses, fileResponses)), HttpStatus.OK);
     }

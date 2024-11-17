@@ -5,7 +5,7 @@ import com.cloudbox.backend.common.dto.MemberSessionDto;
 import com.cloudbox.backend.common.dto.Response;
 import com.cloudbox.backend.common.exception.InvalidRequestException;
 import com.cloudbox.backend.file.dto.request.FolderCreateRequest;
-import com.cloudbox.backend.file.service.FolderService;
+import com.cloudbox.backend.file.service.interfaces.command.FolderCommandService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "폴더 관리", description = "폴더 관련 API")
 public class FolderController {
 
-    private final FolderService folderService;
+    private final FolderCommandService folderCommandService;
 
     @Operation(summary = "폴더 생성", description = "지정된 상위 폴더에 새로운 폴더를 생성합니다.")
     @ApiResponses(value = {
@@ -40,7 +40,7 @@ public class FolderController {
             throw new InvalidRequestException("폴더 생성 요청 값이 올바르지 않습니다. 다시 확인해 주세요.", bindingResult);
         }
 
-        Long folder = folderService.createFolder(parentFolderId, folderCreateRequest, memberSessionDto);
+        Long folder = folderCommandService.createFolder(parentFolderId, folderCreateRequest, memberSessionDto);
 
         return new ResponseEntity<>(Response.createResponseWithoutData(HttpServletResponse.SC_CREATED, "폴더 생성 성공"), HttpStatus.CREATED);
     }
