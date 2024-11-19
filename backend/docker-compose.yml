@@ -1,21 +1,8 @@
 version: '3.9'
 
 services:
-  postgres_container:
-    image: postgres
-    restart: always
-    ports:
-      - "${DB_PORT}:${DB_PORT}"
-    environment:
-      POSTGRES_DB: "${DB_NAME}"
-      POSTGRES_USER: "${DB_USERNAME}"
-      POSTGRES_PASSWORD: "${DB_PASSWORD}"
-
   springboot_container:
     build: .
-
-    depends_on:
-      - postgres_container
 
     restart: always
 
