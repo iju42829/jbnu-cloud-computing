@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 
 @Slf4j
@@ -29,10 +30,35 @@ public class FileCommandServiceImpl implements FileCommandService {
         Member member = memberService.getMemberEntityByUsername(memberSessionDto.getUsername());
         Folder folder = folderRepository.findById(folderId).orElseThrow(FolderNotFoundException::new);
 
+        if (fileRepository.existsByFileNameAndFolder(fileName, folder)) {
+            fileName = generateUniqueFileName(fileName, folder);
+        }
+
         File file = File.createFile(member, fileName, realFilePath, folder);
 
         File savedFile = fileRepository.save(file);
 
         return savedFile.getId();
+    }
+
+    private String generateUniqueFileName(String fileName, Folder folder) {
+        // 파일명과 확장자 분리
+        String extension = StringUtils.getFilenameExtension(fileName); // 확장자 추출
+        String baseName = fileName;
+        if (extension != null) {
+            baseName = fileName.substring(0, fileName.length() - extension.length() - 1); // 확장자 제외한 파일명
+        }
+
+        String uniqueFileName = fileName;
+        int counter = 1;
+
+        // 중복 이름 체크: 동일 이름이 존재하면 "(n)" 추가
+        while (fileRepository.existsByFileNameAndFolder(uniqueFileName, folder)) {
+            uniqueFileName = String.format("%s (%d)%s", baseName, counter,
+                    extension == null ? "" : "." + extension);
+            counter++;
+        }
+
+        return uniqueFileName;
     }
 }
