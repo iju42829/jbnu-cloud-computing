@@ -14,6 +14,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -29,9 +30,9 @@ public class S3StorageService {
     private String bucketName;
     
     public Long fileUpload(MemberSessionDto memberSessionDto, MultipartFile uploadFile, Long folderId) {
-        String fullFolderPath = folderQueryService.getFullFolderPathById(folderId);
+//        String fullFolderPath = folderQueryService.getFullFolderPathById(folderId);
 
-        String savedRealFilePath = fullFolderPath + uploadFile.getOriginalFilename();
+        String savedRealFilePath = memberSessionDto.getUsername() + "/" + UUID.randomUUID().toString() + uploadFile.getOriginalFilename();
 
         Long savedFileId = fileCommandService.createFile(memberSessionDto, uploadFile.getOriginalFilename(), savedRealFilePath, folderId);
 
