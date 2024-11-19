@@ -3,6 +3,7 @@ package com.cloudbox.backend.file.controller;
 import com.cloudbox.backend.common.argumentResolver.annotation.Login;
 import com.cloudbox.backend.common.dto.MemberSessionDto;
 import com.cloudbox.backend.common.dto.Response;
+import com.cloudbox.backend.file.dto.response.FileDownloadResponse;
 import com.cloudbox.backend.file.service.impl.S3StorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -11,6 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamSource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -38,5 +41,18 @@ public class FileController {
         s3StorageService.fileUpload(memberSessionDto, uploadFile, folderId);
 
         return new ResponseEntity<>(Response.createResponseWithoutData(HttpServletResponse.SC_CREATED, "파일 업로드에 성공하였습니다."), HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "파일 다운로드", description = "지정된 파일을 다운로드 합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "파일 다운로드 성공")
+    })
+    @GetMapping("/file/{fileId}")
+    public ResponseEntity<InputStreamSource> downloadFile(@Parameter(description = "다운로드할 파일의 고유 ID") @PathVariable Long fileId) {
+        FileDownloadResponse fileDownloadResponse = s3StorageService.downloadFile(fileId);
+
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDownloadResponse.getFileName() + "\"")
+                .body(fileDownloadResponse.getInputStreamSource());
     }
 }

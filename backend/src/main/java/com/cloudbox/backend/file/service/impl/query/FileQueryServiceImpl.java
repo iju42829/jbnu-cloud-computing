@@ -27,6 +27,11 @@ public class FileQueryServiceImpl implements FileQueryService {
         return file.getFilePath();
     }
 
+    @Override
+    public File getFileEntityById(Long fileId) {
+        return fileRepository.findById(fileId).orElseThrow(FileNotFoundException::new);
+    }
+
     public List<FileResponse> getFileResponsesByFolder(Long folderId, MemberSessionDto memberSessionDto) {
         List<File> files = fileRepository.findByFolderId(folderId);
 
