@@ -7,7 +7,7 @@ import com.cloudbox.backend.file.dto.response.FileResponse;
 import java.util.List;
 
 public interface FileQueryService {
-    String getFilePathById(Long fileId);
+    String getFilePathById(MemberSessionDto memberSessionDto, Long fileId);
     File getFileEntityByIdAndCreateBy(MemberSessionDto memberSessionDto, Long fileId);
     List<FileResponse> getFileResponsesByFolder(Long folderId, MemberSessionDto memberSessionDto);
 }

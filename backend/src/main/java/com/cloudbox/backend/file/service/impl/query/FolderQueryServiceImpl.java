@@ -32,7 +32,7 @@ public class FolderQueryServiceImpl implements FolderQueryService {
 
     @Override
     public List<FolderResponse> getFolderResponseById(Long folderId, MemberSessionDto memberSessionDto) {
-        Folder folder = folderRepository.findById(folderId).orElseThrow(FolderNotFoundException::new);
+        Folder folder = getFolderEntityByIdAndCreateBy(folderId, memberSessionDto);
 
         List<Folder> childFolders = folder.getChildFolders();
 
@@ -42,9 +42,17 @@ public class FolderQueryServiceImpl implements FolderQueryService {
     }
 
     @Override
-    public Folder getFolderEntityById(Long folderId) {
-        return folderRepository
-                .findById(folderId)
-                .orElseThrow(FolderNotFoundException::new);
+    public Folder getFolderEntityByIdAndCreateBy(Long folderId, MemberSessionDto memberSessionDto) {
+        Folder folder = folderRepository.findByIdAndCreateBy(folderId, memberSessionDto.getUsername()).orElse(null);
+
+        if (folder == null) {
+            folder = folderRepository.findById(folderId).orElseThrow(FolderNotFoundException::new);
+
+            if (!folder.getMember().getUsername().equals(memberSessionDto.getUsername())) {
+                throw new FolderNotFoundException("해당 폴더에 접근 권한이 없습니다.");
+            }
+        }
+
+        return folder;
     }
 }

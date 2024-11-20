@@ -3,9 +3,7 @@ package com.cloudbox.backend.file.service.impl.command;
 import com.cloudbox.backend.common.dto.MemberSessionDto;
 import com.cloudbox.backend.file.domain.File;
 import com.cloudbox.backend.file.domain.Folder;
-import com.cloudbox.backend.file.exception.FolderNotFoundException;
 import com.cloudbox.backend.file.repository.FileRepository;
-import com.cloudbox.backend.file.repository.FolderRepository;
 import com.cloudbox.backend.file.service.interfaces.command.FileCommandService;
 import com.cloudbox.backend.file.service.interfaces.query.FileQueryService;
 import com.cloudbox.backend.file.service.interfaces.query.FolderQueryService;
@@ -32,7 +30,7 @@ public class FileCommandServiceImpl implements FileCommandService {
     @Override
     public Long createFile(MemberSessionDto memberSessionDto, String fileName, String realFilePath, Long folderId) {
         Member member = memberService.getMemberEntityByUsername(memberSessionDto.getUsername());
-        Folder folder = folderQueryService.getFolderEntityById(folderId);
+        Folder folder = folderQueryService.getFolderEntityByIdAndCreateBy(folderId, memberSessionDto);
 
         if (fileRepository.existsByFileNameAndFolder(fileName, folder)) {
             fileName = generateUniqueFileName(fileName, folder);

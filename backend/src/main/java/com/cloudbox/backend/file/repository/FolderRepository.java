@@ -9,4 +9,5 @@ import java.util.Optional;
 
 public interface FolderRepository extends JpaRepository<Folder, Long> {
     Optional<Folder> findByMemberAndFolderType(Member member, FolderType folderType);
+    Optional<Folder> findByIdAndCreateBy(Long folderId, String createBy);
 }

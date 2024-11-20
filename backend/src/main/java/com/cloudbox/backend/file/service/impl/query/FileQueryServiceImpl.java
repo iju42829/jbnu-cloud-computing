@@ -19,9 +19,10 @@ public class FileQueryServiceImpl implements FileQueryService {
 
     private final FileRepository fileRepository;
 
-    public String getFilePathById(Long fileId) {
+    @Override
+    public String getFilePathById(MemberSessionDto memberSessionDto, Long fileId) {
         File file = fileRepository
-                .findById(fileId)
+                .findByIdAndCreateBy(fileId, memberSessionDto.getUsername())
                 .orElseThrow(FileNotFoundException::new);
 
         return file.getFilePath();
@@ -35,7 +36,7 @@ public class FileQueryServiceImpl implements FileQueryService {
     }
 
     public List<FileResponse> getFileResponsesByFolder(Long folderId, MemberSessionDto memberSessionDto) {
-        List<File> files = fileRepository.findByFolderId(folderId);
+        List<File> files = fileRepository.findByFolderIdAndCreateBy(folderId, memberSessionDto.getUsername());
 
         return files.stream()
                 .map(FileResponse::fromFile)

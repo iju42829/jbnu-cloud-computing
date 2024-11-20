@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FileRepository extends JpaRepository<File, Long> {
-    List<File> findByFolderId(Long folderId);
+    List<File> findByFolderIdAndCreateBy(Long folderId, String createBy);
     boolean existsByFileNameAndFolder(String fileName, Folder folder);
 
     Optional<File> findByIdAndCreateBy(Long fileId, String createBy);

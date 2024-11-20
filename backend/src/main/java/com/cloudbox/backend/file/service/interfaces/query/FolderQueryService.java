@@ -11,5 +11,5 @@ public interface FolderQueryService {
 
     List<FolderResponse> getFolderResponseById(Long folderId, MemberSessionDto memberSessionDto);
 
-    Folder getFolderEntityById(Long folderId);
+    Folder getFolderEntityByIdAndCreateBy(Long folderId, MemberSessionDto memberSessionDto);
 }
