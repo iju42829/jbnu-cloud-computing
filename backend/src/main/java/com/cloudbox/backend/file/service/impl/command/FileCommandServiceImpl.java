@@ -7,6 +7,8 @@ import com.cloudbox.backend.file.exception.FolderNotFoundException;
 import com.cloudbox.backend.file.repository.FileRepository;
 import com.cloudbox.backend.file.repository.FolderRepository;
 import com.cloudbox.backend.file.service.interfaces.command.FileCommandService;
+import com.cloudbox.backend.file.service.interfaces.query.FileQueryService;
+import com.cloudbox.backend.file.service.interfaces.query.FolderQueryService;
 import com.cloudbox.backend.member.domain.Member;
 import com.cloudbox.backend.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +23,16 @@ import org.springframework.util.StringUtils;
 @Transactional
 @RequiredArgsConstructor
 public class FileCommandServiceImpl implements FileCommandService {
-    private final FolderRepository folderRepository;
     private final FileRepository fileRepository;
+
     private final MemberService memberService;
+    private final FolderQueryService folderQueryService;
+    private final FileQueryService fileQueryService;
 
     @Override
     public Long createFile(MemberSessionDto memberSessionDto, String fileName, String realFilePath, Long folderId) {
         Member member = memberService.getMemberEntityByUsername(memberSessionDto.getUsername());
-        Folder folder = folderRepository.findById(folderId).orElseThrow(FolderNotFoundException::new);
+        Folder folder = folderQueryService.getFolderEntityById(folderId);
 
         if (fileRepository.existsByFileNameAndFolder(fileName, folder)) {
             fileName = generateUniqueFileName(fileName, folder);
@@ -39,6 +43,13 @@ public class FileCommandServiceImpl implements FileCommandService {
         File savedFile = fileRepository.save(file);
 
         return savedFile.getId();
+    }
+
+    @Override
+    public void deleteFile(MemberSessionDto memberSessionDto, Long fileId) {
+        File file = fileQueryService.getFileEntityByIdAndCreateBy(memberSessionDto, fileId);
+
+        fileRepository.delete(file);
     }
 
     private String generateUniqueFileName(String fileName, Folder folder) {

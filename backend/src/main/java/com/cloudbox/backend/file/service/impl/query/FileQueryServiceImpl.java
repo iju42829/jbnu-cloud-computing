@@ -28,8 +28,10 @@ public class FileQueryServiceImpl implements FileQueryService {
     }
 
     @Override
-    public File getFileEntityById(Long fileId) {
-        return fileRepository.findById(fileId).orElseThrow(FileNotFoundException::new);
+    public File getFileEntityByIdAndCreateBy(MemberSessionDto memberSessionDto, Long fileId) {
+        return fileRepository
+                .findByIdAndCreateBy(fileId, memberSessionDto.getUsername())
+                .orElseThrow(FileNotFoundException::new);
     }
 
     public List<FileResponse> getFileResponsesByFolder(Long folderId, MemberSessionDto memberSessionDto) {

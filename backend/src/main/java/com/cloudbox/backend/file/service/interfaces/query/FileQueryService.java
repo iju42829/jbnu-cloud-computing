@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface FileQueryService {
     String getFilePathById(Long fileId);
-    File getFileEntityById(Long fileId);
+    File getFileEntityByIdAndCreateBy(MemberSessionDto memberSessionDto, Long fileId);
     List<FileResponse> getFileResponsesByFolder(Long folderId, MemberSessionDto memberSessionDto);
 }

@@ -48,11 +48,18 @@ public class FileController {
             @ApiResponse(responseCode = "200", description = "파일 다운로드 성공")
     })
     @GetMapping("/file/{fileId}")
-    public ResponseEntity<InputStreamSource> downloadFile(@Parameter(description = "다운로드할 파일의 고유 ID") @PathVariable Long fileId) {
-        FileDownloadResponse fileDownloadResponse = s3StorageService.downloadFile(fileId);
+    public ResponseEntity<InputStreamSource> downloadFile(@Login MemberSessionDto memberSessionDto, @Parameter(description = "다운로드할 파일의 고유 ID") @PathVariable Long fileId) {
+        FileDownloadResponse fileDownloadResponse = s3StorageService.downloadFile(memberSessionDto, fileId);
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDownloadResponse.getFileName() + "\"")
                 .body(fileDownloadResponse.getInputStreamSource());
+    }
+
+    @DeleteMapping("/file/{fileId}")
+    public ResponseEntity<Response<?>> removeFile(@Login MemberSessionDto memberSessionDto, @PathVariable Long fileId) {
+        s3StorageService.deleteFile(memberSessionDto, fileId);
+
+        return new ResponseEntity<>(Response.createResponseWithoutData(HttpServletResponse.SC_OK, "파일 삭제에 성공했습니다."), HttpStatus.OK);
     }
 }

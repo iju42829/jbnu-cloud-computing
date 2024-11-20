@@ -40,4 +40,11 @@ public class FolderQueryServiceImpl implements FolderQueryService {
                 .map(FolderResponse::fromFolder)
                 .toList();
     }
+
+    @Override
+    public Folder getFolderEntityById(Long folderId) {
+        return folderRepository
+                .findById(folderId)
+                .orElseThrow(FolderNotFoundException::new);
+    }
 }
