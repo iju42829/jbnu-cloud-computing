@@ -51,6 +51,10 @@ public class Folder extends BaseEntity {
         return new Folder(name + "/", FolderType.SUB, parentFolder, member);
     }
 
+    public void changeParentFolder(Folder parentFolder) {
+        this.parentFolder = parentFolder;
+    }
+
     public String buildFullFolderPath() {
         if (this.parentFolder == null) {
             return this.name;

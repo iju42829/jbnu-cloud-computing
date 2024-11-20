@@ -38,4 +38,12 @@ public class File extends BaseEntity {
     public static File createFile(Member member, String fileName, String filePath, Folder folder) {
         return new File(member, fileName, filePath, folder);
     }
+
+    public void changeFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public void changerFolder(Folder folder) {
+        this.folder = folder;
+    }
 }

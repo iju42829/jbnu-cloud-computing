@@ -2,10 +2,13 @@ package com.cloudbox.backend.file.service.impl.command;
 
 import com.cloudbox.backend.common.dto.MemberSessionDto;
 import com.cloudbox.backend.file.domain.Folder;
+import com.cloudbox.backend.file.dto.FolderType;
 import com.cloudbox.backend.file.dto.request.FolderCreateRequest;
 import com.cloudbox.backend.file.exception.FolderNotFoundException;
+import com.cloudbox.backend.file.exception.RootFolderMoveException;
 import com.cloudbox.backend.file.repository.FolderRepository;
 import com.cloudbox.backend.file.service.interfaces.command.FolderCommandService;
+import com.cloudbox.backend.file.service.interfaces.query.FolderQueryService;
 import com.cloudbox.backend.member.domain.Member;
 import com.cloudbox.backend.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FolderCommandServiceImpl implements FolderCommandService {
 
     private final FolderRepository folderRepository;
+    private final FolderQueryService folderQueryService;
     private final MemberService memberService;
 
     public Long createFolder(Long parentFolderId, FolderCreateRequest folderCreateRequest, MemberSessionDto memberSessionDto) {
@@ -36,6 +40,20 @@ public class FolderCommandServiceImpl implements FolderCommandService {
         return savedFolder.getId();
     }
 
+    @Override
+    public void moveFolder(MemberSessionDto memberSessionDto, Long folderId, Long targetFolderId) {
+        Folder folder = folderQueryService.getFolderEntityByIdAndCreateBy(folderId, memberSessionDto);
+
+        if (folder.getFolderType() == FolderType.ROOT) {
+            throw new RootFolderMoveException("루트 폴더는 이동할 수 없습니다.");
+        }
+
+        Folder parentFolder = folderQueryService.getFolderEntityByIdAndCreateBy(targetFolderId, memberSessionDto);
+
+        folder.changeParentFolder(parentFolder);
+    }
+
+    @Override
     public Long createRootFolder(Long memberId, FolderCreateRequest folderCreateRequest) {
         Member member = memberService.getMemberEntityById(memberId);
 

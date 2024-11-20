@@ -50,6 +50,20 @@ public class FileCommandServiceImpl implements FileCommandService {
         fileRepository.delete(file);
     }
 
+    @Override
+    public void moveFile(MemberSessionDto memberSessionDto, Long fileId, Long targetFolderId) {
+        File file = fileQueryService.getFileEntityByIdAndCreateBy(memberSessionDto, fileId);
+
+        Folder targetFolder = folderQueryService.getFolderEntityByIdAndCreateBy(targetFolderId, memberSessionDto);
+
+        if (fileRepository.existsByFileNameAndFolder(file.getFileName(), targetFolder)) {
+            String uniqueFileName = generateUniqueFileName(file.getFileName(), targetFolder);
+            file.changeFileName(uniqueFileName);
+        }
+
+        file.changerFolder(targetFolder);
+    }
+
     private String generateUniqueFileName(String fileName, Folder folder) {
         // 파일명과 확장자 분리
         String extension = StringUtils.getFilenameExtension(fileName); // 확장자 추출
