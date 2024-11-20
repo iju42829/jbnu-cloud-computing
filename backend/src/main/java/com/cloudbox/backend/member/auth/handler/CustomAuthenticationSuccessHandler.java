@@ -1,7 +1,14 @@
 package com.cloudbox.backend.member.auth.handler;
 
 import com.cloudbox.backend.common.dto.Response;
+import com.cloudbox.backend.file.domain.Folder;
+import com.cloudbox.backend.file.dto.FolderType;
+import com.cloudbox.backend.file.exception.FolderNotFoundException;
+import com.cloudbox.backend.file.repository.FolderRepository;
 import com.cloudbox.backend.member.auth.dto.AuthenticationSuccessResponse;
+import com.cloudbox.backend.member.domain.Member;
+import com.cloudbox.backend.member.exception.MemberNotFoundException;
+import com.cloudbox.backend.member.repository.MemberRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,13 +26,18 @@ import java.io.IOException;
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final ObjectMapper objectMapper;
+    private final FolderRepository folderRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
+        Member member = memberRepository.findByUsername(authentication.getName()).orElseThrow(MemberNotFoundException::new);
+        Folder folder = folderRepository.findByMemberAndFolderType(member, FolderType.ROOT).orElseThrow(FolderNotFoundException::new);
+
         Response<AuthenticationSuccessResponse> resultResponse = Response.createResponse(HttpServletResponse.SC_OK,
                 "로그인에 성공했습니다.",
-                new AuthenticationSuccessResponse(authentication.getName()));
+                new AuthenticationSuccessResponse(authentication.getName(), folder.getId()));
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);

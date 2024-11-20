@@ -8,4 +8,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class AuthenticationSuccessResponse {
     private String username;
+    private Long rootFolderId;
 }

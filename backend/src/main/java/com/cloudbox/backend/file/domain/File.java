@@ -1,5 +1,6 @@
 package com.cloudbox.backend.file.domain;
 
+import com.cloudbox.backend.common.domain.BaseEntity;
 import com.cloudbox.backend.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class File {
+public class File extends BaseEntity {
 
     @Id
     @GeneratedValue

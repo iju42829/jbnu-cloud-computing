@@ -1,5 +1,6 @@
 package com.cloudbox.backend.file.domain;
 
+import com.cloudbox.backend.common.domain.BaseEntity;
 import com.cloudbox.backend.file.dto.FolderType;
 import com.cloudbox.backend.member.domain.Member;
 import jakarta.persistence.*;
@@ -13,7 +14,7 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Folder {
+public class Folder extends BaseEntity {
 
     @Id
     @GeneratedValue
