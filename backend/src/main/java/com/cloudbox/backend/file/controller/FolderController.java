@@ -10,6 +10,7 @@ import com.cloudbox.backend.file.dto.response.FolderMoveOptionsResponse;
 import com.cloudbox.backend.file.service.interfaces.command.FolderCommandService;
 import com.cloudbox.backend.file.service.interfaces.query.FolderQueryService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -49,11 +50,15 @@ public class FolderController {
         return new ResponseEntity<>(Response.createResponseWithoutData(HttpServletResponse.SC_CREATED, "폴더 생성 성공"), HttpStatus.CREATED);
     }
 
+    @Operation(summary = "이동 목록 조회", description = "지정된 리소스를 이동할 수 있는 폴더 목록을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "이동 가능한 폴더 목록 조회 성공"),
+    })
     @GetMapping("/moveList")
     public ResponseEntity<Response<FolderMoveOptionsResponse>> retrieveFolderMoveList(@Login MemberSessionDto memberSessionDto,
-                                                                                      @RequestParam Long moveId,
-                                                                                      @RequestParam Long folderId,
-                                                                                      @RequestParam ResourceType resourceType) {
+                                                                                      @Parameter(description = "이동할 폴더 또는 파일 ID") @RequestParam Long moveId,
+                                                                                      @Parameter(description = "현재 폴더 ID (처음 시작 시 ROOT 폴더 ID로 지정하고, 이동할 폴더 ID를 지정합니다.)") @RequestParam Long folderId,
+                                                                                      @Parameter(description = "리소스 타입 (FOLDER 또는 FILE)") @RequestParam ResourceType resourceType) {
 
         FolderMoveOptionsResponse folderResponses = folderQueryService.getFolderResponsesWithoutMoveId(folderId, moveId, resourceType, memberSessionDto);
 
