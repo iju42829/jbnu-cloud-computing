@@ -28,15 +28,18 @@ public class File extends BaseEntity {
 
     private String filePath;
 
-    private File(Member member, String fileName, String filePath, Folder folder) {
+    private Long size;
+
+    private File(Member member, String fileName, String filePath, Folder folder, Long size) {
         this.member = member;
         this.fileName = fileName;
         this.filePath = filePath;
         this.folder = folder;
+        this.size = size;
     }
 
-    public static File createFile(Member member, String fileName, String filePath, Folder folder) {
-        return new File(member, fileName, filePath, folder);
+    public static File createFile(Member member, String fileName, String filePath, Folder folder, Long size) {
+        return new File(member, fileName, filePath, folder, size);
     }
 
     public void changeFileName(String fileName) {
