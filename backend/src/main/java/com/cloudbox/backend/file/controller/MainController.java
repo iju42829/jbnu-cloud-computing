@@ -30,9 +30,9 @@ public class MainController {
     private final FolderQueryService folderQueryService;
 
     @GetMapping
-    public ResponseEntity<Response<MainPageResponse>> mainPage(@RequestParam(required = false) Long folderId, @Login MemberSessionDto memberSessionDto) {
+    public ResponseEntity<Response<MainPageResponse>> mainPage(@RequestParam Long folderId, @Login MemberSessionDto memberSessionDto) {
         List<FileResponse> fileResponses = fileQueryService.getFileResponsesByFolder(folderId, memberSessionDto);
-        List<FolderResponse> folderResponses = folderQueryService.getFolderResponseById(folderId, memberSessionDto);
+        List<FolderResponse> folderResponses = folderQueryService.getFolderResponsesById(folderId, memberSessionDto);
 
         return new ResponseEntity<>(Response.createResponse(HttpServletResponse.SC_OK, "파일과 폴더 조회에 성공했습니다.", new MainPageResponse(folderResponses, fileResponses)), HttpStatus.OK);
     }

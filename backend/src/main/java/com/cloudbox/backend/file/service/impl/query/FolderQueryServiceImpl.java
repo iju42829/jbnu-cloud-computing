@@ -2,8 +2,12 @@ package com.cloudbox.backend.file.service.impl.query;
 
 import com.cloudbox.backend.common.dto.MemberSessionDto;
 import com.cloudbox.backend.file.domain.Folder;
+import com.cloudbox.backend.file.dto.FolderType;
+import com.cloudbox.backend.file.dto.ResourceType;
+import com.cloudbox.backend.file.dto.response.FolderMoveOptionsResponse;
 import com.cloudbox.backend.file.dto.response.FolderResponse;
 import com.cloudbox.backend.file.exception.FolderNotFoundException;
+import com.cloudbox.backend.file.exception.RootFolderMoveException;
 import com.cloudbox.backend.file.repository.FolderRepository;
 import com.cloudbox.backend.file.service.interfaces.query.FolderQueryService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +35,7 @@ public class FolderQueryServiceImpl implements FolderQueryService {
     }
 
     @Override
-    public List<FolderResponse> getFolderResponseById(Long folderId, MemberSessionDto memberSessionDto) {
+    public List<FolderResponse> getFolderResponsesById(Long folderId, MemberSessionDto memberSessionDto) {
         Folder folder = getFolderEntityByIdAndCreateBy(folderId, memberSessionDto);
 
         List<Folder> childFolders = folder.getChildFolders();
@@ -54,5 +58,39 @@ public class FolderQueryServiceImpl implements FolderQueryService {
         }
 
         return folder;
+    }
+
+    @Override
+    public FolderMoveOptionsResponse getFolderResponsesWithoutMoveId(Long currentFolderId, Long moveId, ResourceType resourceType, MemberSessionDto memberSessionDto) {
+        Folder folder = getFolderEntityByIdAndCreateBy(currentFolderId, memberSessionDto);
+
+        validateRootFolder(moveId, resourceType, memberSessionDto);
+
+        List<FolderResponse> folderResponses = getChildFoldersForMove(folder, moveId, resourceType);
+
+        String fullFolderPath = folder.buildFullFolderPath();
+
+        Long parentFolderId = null;
+        if (folder.getFolderType() != FolderType.ROOT) {
+            parentFolderId = folder.getParentFolder().getId();
+        }
+
+        return new FolderMoveOptionsResponse(fullFolderPath, moveId, parentFolderId, currentFolderId, folderResponses);
+    }
+
+    private void validateRootFolder(Long moveId, ResourceType resourceType, MemberSessionDto memberSessionDto) {
+        if (resourceType == ResourceType.FOLDER) {
+            Folder moveFolder = getFolderEntityByIdAndCreateBy(moveId, memberSessionDto);
+            if (moveFolder.getFolderType() == FolderType.ROOT) {
+                throw new RootFolderMoveException();
+            }
+        }
+    }
+
+    private List<FolderResponse> getChildFoldersForMove(Folder folder, Long moveId, ResourceType resourceType) {
+        return folder.getChildFolders().stream()
+                .filter(childFolder -> resourceType != ResourceType.FOLDER || !childFolder.getId().equals(moveId))
+                .map(FolderResponse::fromFolder)
+                .toList();
     }
 }
