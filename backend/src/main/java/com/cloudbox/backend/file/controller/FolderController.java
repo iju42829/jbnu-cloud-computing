@@ -64,4 +64,11 @@ public class FolderController {
 
         return new ResponseEntity<>(Response.createResponse(HttpServletResponse.SC_OK, "폴더 또는 파일 이동목록 조회에 성공했습니다.", folderResponses), HttpStatus.OK);
     }
+
+    @DeleteMapping("/{folderId}")
+    public ResponseEntity<Response<?>> removeFolder(@Login MemberSessionDto memberSessionDto, @PathVariable Long folderId) {
+        folderCommandService.deleteFolder(memberSessionDto, folderId);
+
+        return new ResponseEntity<>(Response.createResponseWithoutData(HttpServletResponse.SC_OK, "폴더와 하위 리소스들을 삭제하였습니다."), HttpStatus.OK);
+    }
 }

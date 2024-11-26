@@ -4,7 +4,9 @@ import com.cloudbox.backend.common.argumentResolver.annotation.Login;
 import com.cloudbox.backend.common.dto.MemberSessionDto;
 import com.cloudbox.backend.common.dto.Response;
 import com.cloudbox.backend.file.dto.response.FileDownloadResponse;
-import com.cloudbox.backend.file.service.impl.S3StorageService;
+import com.cloudbox.backend.file.service.interfaces.command.FileCommandService;
+import com.cloudbox.backend.file.service.interfaces.command.S3StorageCommandService;
+import com.cloudbox.backend.file.service.interfaces.query.S3StorageQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,7 +29,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "파일 관리", description = "파일 관련 API")
 public class FileController {
 
-    private final S3StorageService s3StorageService;
+    private final S3StorageQueryService s3StorageQueryService;
+    private final S3StorageCommandService s3StorageCommandService;
+    private final FileCommandService fileCommandService;
 
     @Operation(summary = "파일 업로드", description = "지정된 폴더에 파일을 업로드합니다.")
     @ApiResponses(value = {
@@ -38,7 +42,7 @@ public class FileController {
                                               @RequestParam(required = false) Long folderId,
                                               @Login MemberSessionDto memberSessionDto) {
 
-        s3StorageService.fileUpload(memberSessionDto, uploadFile, folderId);
+        s3StorageCommandService.fileUpload(memberSessionDto, uploadFile, folderId);
 
         return new ResponseEntity<>(Response.createResponseWithoutData(HttpServletResponse.SC_CREATED, "파일 업로드에 성공하였습니다."), HttpStatus.CREATED);
     }
@@ -49,7 +53,7 @@ public class FileController {
     })
     @GetMapping("/file/{fileId}")
     public ResponseEntity<InputStreamSource> downloadFile(@Login MemberSessionDto memberSessionDto, @Parameter(description = "다운로드할 파일의 고유 ID") @PathVariable Long fileId) {
-        FileDownloadResponse fileDownloadResponse = s3StorageService.downloadFile(memberSessionDto, fileId);
+        FileDownloadResponse fileDownloadResponse = s3StorageQueryService.downloadFile(memberSessionDto, fileId);
 
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDownloadResponse.getFileName() + "\"")
@@ -58,7 +62,7 @@ public class FileController {
 
     @DeleteMapping("/file/{fileId}")
     public ResponseEntity<Response<?>> removeFile(@Login MemberSessionDto memberSessionDto, @PathVariable Long fileId) {
-        s3StorageService.deleteFile(memberSessionDto, fileId);
+        fileCommandService.deleteFile(memberSessionDto, fileId);
 
         return new ResponseEntity<>(Response.createResponseWithoutData(HttpServletResponse.SC_OK, "파일 삭제에 성공했습니다."), HttpStatus.OK);
     }

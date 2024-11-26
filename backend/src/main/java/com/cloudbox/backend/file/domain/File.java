@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@EntityListeners(FileEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class File extends BaseEntity {
 

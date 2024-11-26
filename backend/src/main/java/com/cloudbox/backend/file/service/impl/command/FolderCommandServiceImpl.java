@@ -54,6 +54,12 @@ public class FolderCommandServiceImpl implements FolderCommandService {
     }
 
     @Override
+    public void deleteFolder(MemberSessionDto memberSessionDto, Long folderId) {
+        Folder folder = folderQueryService.getFolderEntityByIdAndCreateBy(folderId, memberSessionDto);
+        folderRepository.delete(folder);
+    }
+
+    @Override
     public Long createRootFolder(Long memberId, FolderCreateRequest folderCreateRequest) {
         Member member = memberService.getMemberEntityById(memberId);
 

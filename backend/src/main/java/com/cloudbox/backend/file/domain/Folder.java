@@ -26,8 +26,11 @@ public class Folder extends BaseEntity {
     @JoinColumn(name = "parent_id")
     private Folder parentFolder;
 
-    @OneToMany(mappedBy = "parentFolder")
+    @OneToMany(mappedBy = "parentFolder", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Folder> childFolders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "folder", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<File> files = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")

@@ -7,4 +7,5 @@ public interface FolderCommandService {
     Long createRootFolder(Long memberId, FolderCreateRequest folderCreateRequest);
     Long createFolder(Long parentFolderId, FolderCreateRequest folderCreateRequest, MemberSessionDto memberSessionDto);
     void moveFolder(MemberSessionDto memberSessionDto, Long folderId, Long targetFolderId);
+    void deleteFolder(MemberSessionDto memberSessionDto, Long folderId);
 }
