@@ -5,6 +5,7 @@ import com.cloudbox.backend.file.domain.File;
 import com.cloudbox.backend.file.domain.Folder;
 import com.cloudbox.backend.file.repository.FileRepository;
 import com.cloudbox.backend.file.service.interfaces.command.FileCommandService;
+import com.cloudbox.backend.file.service.interfaces.command.S3StorageCommandService;
 import com.cloudbox.backend.file.service.interfaces.query.FileQueryService;
 import com.cloudbox.backend.file.service.interfaces.query.FolderQueryService;
 import com.cloudbox.backend.member.domain.Member;
@@ -14,6 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
 
 
 @Slf4j
@@ -26,22 +30,30 @@ public class FileCommandServiceImpl implements FileCommandService {
     private final MemberService memberService;
     private final FolderQueryService folderQueryService;
     private final FileQueryService fileQueryService;
+    private final S3StorageCommandService s3StorageCommandService;
 
     @Override
-    public Long createFile(MemberSessionDto memberSessionDto, String fileName, Long size, String realFilePath, Long folderId) {
+    public Long createFile(MemberSessionDto memberSessionDto, MultipartFile uploadFile, Long folderId) {
         Member member = memberService.getMemberEntityByUsername(memberSessionDto.getUsername());
         Folder folder = folderQueryService.getFolderEntityByIdAndCreateBy(folderId, memberSessionDto);
+
+        String realFilePath = memberSessionDto.getUsername() + "/" + UUID.randomUUID().toString() + uploadFile.getOriginalFilename();
+
+        String fileName = uploadFile.getOriginalFilename();
 
         if (fileRepository.existsByFileNameAndFolder(fileName, folder)) {
             fileName = generateUniqueFileName(fileName, folder);
         }
 
-        File file = File.createFile(member, fileName, realFilePath, folder, size);
+        File file = File.createFile(member, fileName, realFilePath, folder, uploadFile.getSize());
 
         File savedFile = fileRepository.save(file);
 
+        s3StorageCommandService.fileUpload(memberSessionDto, uploadFile, realFilePath);
+
         return savedFile.getId();
     }
+
 
     @Override
     public void deleteFile(MemberSessionDto memberSessionDto, Long fileId) {

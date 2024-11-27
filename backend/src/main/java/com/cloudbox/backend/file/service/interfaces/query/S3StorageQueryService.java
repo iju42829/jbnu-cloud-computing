@@ -1,9 +1,9 @@
 package com.cloudbox.backend.file.service.interfaces.query;
 
-import com.cloudbox.backend.common.dto.MemberSessionDto;
-import com.cloudbox.backend.file.dto.response.FileDownloadResponse;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 
 public interface S3StorageQueryService {
-    FileDownloadResponse downloadFile(MemberSessionDto memberSessionDto, Long fileId);
+    ResponseInputStream<GetObjectResponse> downloadFile(String filePath);
 }

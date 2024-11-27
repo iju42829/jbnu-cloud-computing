@@ -2,7 +2,6 @@ package com.cloudbox.backend.file.service.impl.command;
 
 import com.cloudbox.backend.common.dto.MemberSessionDto;
 import com.cloudbox.backend.file.domain.File;
-import com.cloudbox.backend.file.service.interfaces.command.FileCommandService;
 import com.cloudbox.backend.file.service.interfaces.command.S3StorageCommandService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +15,7 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
-import java.util.UUID;
+
 
 @Slf4j
 @Service
@@ -25,7 +24,6 @@ import java.util.UUID;
 public class S3StorageCommandServiceImpl implements S3StorageCommandService {
 
     private final S3Client s3Client;
-    private final FileCommandService fileCommandService;
 
     @Value("${aws.bucket-name}")
     private String bucketName;
@@ -41,22 +39,16 @@ public class S3StorageCommandServiceImpl implements S3StorageCommandService {
         }
 
     @Override
-    public Long fileUpload(MemberSessionDto memberSessionDto, MultipartFile uploadFile, Long folderId) {
-        String savedRealFilePath = memberSessionDto.getUsername() + "/" + UUID.randomUUID().toString() + uploadFile.getOriginalFilename();
-
-        Long savedFileId = fileCommandService.createFile(memberSessionDto, uploadFile.getOriginalFilename(), uploadFile.getSize(), savedRealFilePath, folderId);
-
+    public void fileUpload(MemberSessionDto memberSessionDto, MultipartFile uploadFile, String realFilePath) {
         try {
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
-                    .key(savedRealFilePath)
+                    .key(realFilePath)
                     .build();
 
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(uploadFile.getBytes()));
 
-            log.debug("파일 업로드 성공: fileId={}", savedFileId);
-
-            return savedFileId;
+            log.debug("파일 업로드 성공");
 
         } catch (IOException e) {
             throw new RuntimeException("Error reading file data", e);

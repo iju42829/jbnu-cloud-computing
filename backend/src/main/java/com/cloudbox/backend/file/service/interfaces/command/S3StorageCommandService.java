@@ -7,5 +7,5 @@ import org.springframework.web.multipart.MultipartFile;
 public interface S3StorageCommandService {
 
     void deleteFile(File file);
-    Long fileUpload(MemberSessionDto memberSessionDto, MultipartFile uploadFile, Long folderId);
+    void fileUpload(MemberSessionDto memberSessionDto, MultipartFile uploadFile, String realFilePath);
 }
