@@ -58,8 +58,13 @@ public class FileController {
                 .body(fileDownloadResponse.getInputStreamSource());
     }
 
+    @Operation(summary = "파일 삭제", description = "지정된 파일을 삭제합니다.\n" + "삭제하려는 파일의 ID를 경로 변수로 전달해야 합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "파일 삭제 성공")
+    })
     @DeleteMapping("/file/{fileId}")
-    public ResponseEntity<Response<?>> removeFile(@Login MemberSessionDto memberSessionDto, @PathVariable Long fileId) {
+    public ResponseEntity<Response<?>> removeFile(@Login MemberSessionDto memberSessionDto,
+                                                  @Parameter(description = "삭제할 파일의 고유 ID") @PathVariable Long fileId) {
         fileCommandService.deleteFile(memberSessionDto, fileId);
 
         return new ResponseEntity<>(Response.createResponseWithoutData(HttpServletResponse.SC_OK, "파일 삭제에 성공했습니다."), HttpStatus.OK);
