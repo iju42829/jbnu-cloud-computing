@@ -1,0 +1,307 @@
+body {
+  position: relative;
+  min-height: 100vh;
+  background-color: #aaaaaa;
+}
+/* 이미지 파일 */
+
+.recentimg {
+  width: 70px;  height: 70px;
+}
+
+/* 헤더 */
+header {
+  position: relative;
+  font-size: 30px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.headerimg {
+  min-width: 30px;  min-height: 30px;
+  width: 30px; height: 30px;
+}
+.userbtn {
+  padding: 10px;
+  display: flex;
+  flex-direction:column;
+  background-color: transparent;
+  border: transparent;
+  align-items: center;
+}
+.userbtn:hover {
+  border-radius: 12px;
+  background-color: #a1a1a1;
+}
+
+/* 헤더 - logo */
+.logobtn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  background-color: transparent;
+  border: transparent;
+}
+.logoimg {
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+}
+.logofont {
+  width: 140px;
+  font-size: 25px;
+  margin-right: 5px;
+}
+
+/* 헤더 - search */
+.searchbar {
+  display: flex;
+  flex-direction: row;
+  width:fit-content;
+  margin-right: auto;
+  background-color: transparent;
+  border-radius: 20px;
+  border: 1px solid #000;
+  box-shadow: inset 0 4px 12px #a1a1a1;
+}
+.searchtext {
+  font-size: 16px;
+  align-self: center;
+  background-color: transparent;
+  border: transparent;
+  margin-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.searchtext:focus{
+  outline: none;
+}
+.searchimg {
+  width: 18px;  height: 18px;
+  margin: 5px;
+}
+
+
+
+/* 메인 */
+main {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  margin-top: -65px;
+}
+
+
+/* 사이드 메뉴 */
+.side-container {
+  margin-top: 75px;
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+  min-height: 100%;
+}
+.side-menu {
+  width: 220px;
+  display: flex;
+  flex-direction: row;
+  border: transparent;
+  align-items: center;
+  text-align: left;
+  background-color: transparent;
+  margin: 1px;
+  padding: 5px;
+  font-size: 18px;
+}
+.side-menu:hover {
+  border-radius: 20px;
+  background-color: #6e6e6ea1;
+}
+.sideimg {
+  width: 18px;  height: 18px;
+  margin: 5px;  margin-right: 10px;
+}
+.storage-viewer {
+  width: 220px;
+  margin-bottom: auto;
+}
+.storage-item {
+  width: 220px;
+  display: flex;
+  flex-direction: row;
+  border: transparent;
+  align-items: center;
+  text-align: left;
+  background-color: transparent;
+  margin: 1px;
+  padding: 5px;
+  font-size: 18px;
+}
+.storage-item:hover {
+  border-radius: 20px;
+  background-color: #6e6e6ea1;
+}
+
+/* 파일 메뉴 */
+.main-container {
+  margin-right: 10px;
+  margin-bottom: 10px;
+  margin-top: 65px;
+  border-radius: 12px;
+  width: 100%;
+  background-color: #dfdfdf;
+}
+/* 최근 파일 메뉴 */
+.recent-container{
+  margin: 10px;
+  padding: 10px;
+  max-height: 400px;
+  border-radius: 12px;
+  background-color: #a1a1a1;
+}
+/* 모든 파일 메뉴 */
+.all-file-container{
+  margin: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  /* background-color: #a1a1a1; */
+}
+.layout-container {
+  display: flex;
+  flex-direction: row;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.layoutbtn {
+  text-align: left;
+  font-size: 15px;
+  background-color: transparent;
+  border: transparent;
+  flex-grow: 1;
+}
+.layoutbtn:hover {
+  background-color: #6e6e6ea1;
+}
+/* .file-container{
+  background-color: antiquewhite;
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  margin-right: 10px;
+} */
+
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.popup-input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.popup-buttons {
+  margin-top: 15px;
+}
+
+.popup-btn {
+  padding: 10px 15px;
+  margin: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.popup-btn:first-child {
+  background-color: #007bff;
+  color: white;
+}
+
+.popup-btn:last-child {
+  background-color: #dc3545;
+  color: white;
+}
+
+
+.all-file-container {
+  display: flex;
+  flex-direction: column;
+  align-items: left; /* 왼쪽 정렬 */
+  justify-content: center; /* 세로 정렬 (필요시) */
+  /*padding: 20px; /* 전체적인 여백 */
+}
+
+.all-file-container table {
+  border-collapse: separate; /* 셀 간격 설정 가능 */
+  border-spacing: 0px 0px; /* 셀 간 간격 */
+  width: 100%; /* 테이블 넓이 설정 */
+  text-align: left; /* 텍스트 왼쪽 정렬 */
+  margin: auto; /* 테이블 수평 중앙 정렬 및 상하 여백 */
+}
+
+.all-file-container td {
+  padding: 10px; /* 셀 내부 여백 */
+  border-bottom: 1px solid #a1a1a1; /* 행 구분선 */
+}
+
+.all-file-container th {
+  padding: 10px; /* 셀 내부 여백 */
+  /*background-color: #f4f4f4; /* 헤더 배경색 */
+  border-bottom: 1px solid #a1a1a1; /* 행 구분선 */
+  font-weight: bold;
+}
+
+.all-file-container tbody tr:hover {
+  background-color: #f9f9f9; /* 행 호버 효과 */
+}
+
+.all-file-container .file-icon-column {
+  width: 18px; /* 최소 너비 설정 */
+  text-align: center; /* 중앙 정렬 */
+}
+
+.all-file-container .menu-btn-column {
+  width: 18px; /* 최소 너비 설정 */
+  text-align: center; /* 중앙 정렬 */
+}
+
+.file-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px; /* 텍스트와 간격 */
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.menu-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.menu-btn:hover img {
+  filter: brightness(0.8); /* 호버 시 약간 어두운 효과 */
+}
