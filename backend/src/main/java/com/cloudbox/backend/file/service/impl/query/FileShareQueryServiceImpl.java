@@ -5,6 +5,7 @@ import com.cloudbox.backend.file.domain.FileShare;
 import com.cloudbox.backend.file.dto.response.FileShareResponse;
 import com.cloudbox.backend.file.dto.response.FileShareResponseList;
 import com.cloudbox.backend.file.exception.FileNotFoundException;
+import com.cloudbox.backend.file.exception.FileShareNotFoundException;
 import com.cloudbox.backend.file.repository.FileShareRepository;
 import com.cloudbox.backend.file.service.interfaces.query.FileShareQueryService;
 import lombok.RequiredArgsConstructor;
@@ -39,5 +40,12 @@ public class FileShareQueryServiceImpl implements FileShareQueryService {
         return new FileShareResponseList(fileShareList.stream()
                 .map(FileShareResponse::fromFileShare)
                 .toList());
+    }
+
+    @Override
+    public FileShare getFileShareEntityByIdAndCreateBy(MemberSessionDto memberSessionDto, Long fileShareId) {
+        return fileShareRepository
+                .findByIdAndCreateBy(fileShareId, memberSessionDto.getUsername())
+                .orElseThrow(FileShareNotFoundException::new);
     }
 }

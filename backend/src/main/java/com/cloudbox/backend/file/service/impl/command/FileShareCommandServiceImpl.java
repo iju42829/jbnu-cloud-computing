@@ -36,4 +36,11 @@ public class FileShareCommandServiceImpl implements FileShareCommandService {
 
         return savedFileShare.getUuid();
     }
+
+    @Override
+    public void deleteFileShare(MemberSessionDto memberSessionDto, Long fileShareId) {
+        FileShare fileShare = fileShareQueryService.getFileShareEntityByIdAndCreateBy(memberSessionDto, fileShareId);
+
+        fileShareRepository.delete(fileShare);
+    }
 }

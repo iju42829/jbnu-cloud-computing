@@ -51,6 +51,13 @@ public class FileShareController {
         return new ResponseEntity<>(Response.createResponse(HttpServletResponse.SC_CREATED, "파일 공유에 성공했습니다.", fileShareCreateResponse), HttpStatus.CREATED);
     }
 
+    @DeleteMapping("/{fileShareId}")
+    public ResponseEntity<Response<?>> removeFileShare(@Login MemberSessionDto memberSessionDto, @PathVariable Long fileShareId) {
+        fileShareCommandService.deleteFileShare(memberSessionDto, fileShareId);
+
+        return new ResponseEntity<>(Response.createResponseWithoutData(HttpServletResponse.SC_OK, "파일 공유를 종료했습니다."), HttpStatus.OK);
+    }
+
     @GetMapping("/{fileId}/{uuid}/info")
     public ResponseEntity<Response<FileResponse>> retrieveFileShareInfo(@PathVariable Long fileId, @PathVariable String uuid) {
         fileShareQueryService.validateFileShare(fileId, uuid);

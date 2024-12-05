@@ -5,4 +5,5 @@ import com.cloudbox.backend.file.dto.request.FileShareCreateRequest;
 
 public interface FileShareCommandService {
     String createFileShare(MemberSessionDto memberSessionDto, FileShareCreateRequest fileShareCreateRequest);
+    void deleteFileShare(MemberSessionDto memberSessionDto, Long fileShareId);
 }
