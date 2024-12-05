@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 function LoginPage() {
   const navigate = useNavigate();
 
@@ -10,21 +9,19 @@ function LoginPage() {
     name: "pikachu",
     profileImage: "image/025.png"
   });
+
   const [options, setOptions] = useState({theme: "dark", notifications: true });
 
   return(
-<<<<<<< Updated upstream
-    <button onClick={()=> navigate("/main", {state: {userInfo, storageInfo, options}})}>확인</button>
-=======
-    <div>
+    <div>      
       <body>
-        <div className="login-container">
+        <div class="login-container">
           {/* <!-- 로고 --> */}
-          <img src="icon/logo.png" alt="Logo" className="logo"/>
+          <img src="icon/logo.png" alt="Logo" class="logo"/>
 
           {/* <!-- 제목 --> */}
           <h2>LOGIN</h2>
-          <p className="subtitle">login page for cloud box</p>
+          <p class="subtitle">login page for cloud box</p>
 
           {/* <!-- ID 입력 --> */}
           <label for="id">ID</label>
@@ -53,6 +50,7 @@ function LoginPage() {
 
 
           {/* <!-- 구분선 --> */}
+
           <div className="separator">LOGIN AS SOCIAL MEDIA</div>
 
           {/* <!-- 소셜 로그인 버튼 --> */}
@@ -61,6 +59,7 @@ function LoginPage() {
               Login with Gmail
           </div>
           <div className="social-btn naver">
+
             <img src="icon/naver-icon.png" alt="Naver Logo"/>
             Login with Naver
           </div>
@@ -68,7 +67,6 @@ function LoginPage() {
         <script src="login.js"></script>
       </body>
     </div>
->>>>>>> Stashed changes
   )
 }
 export default LoginPage;

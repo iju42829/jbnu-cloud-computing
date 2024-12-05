@@ -20,12 +20,6 @@ function MainPage() {
   //페이지 이동, 이전 페이지의 데이터 가져오기
   const navigate = useNavigate();  
   const location = useLocation();
-<<<<<<< Updated upstream
-  const {userInfo, storageInfo, options} = location.state || {};
-
-  const [files, setFiles] = useState(storageInfo || []);
-
-=======
   const {userInfo, options} = location.state || {};
   const [currentPath, setCurrentPath] = useState("/storage");
 
@@ -44,56 +38,35 @@ function MainPage() {
       setFiles(data);
       setCurrentPath(path);
     }
->>>>>>> Stashed changes
 
-  //현재 위치 관리
-  const Path = "/내 저장소"
-
-  //드롭다운 관리
-  const UserDropdown = () => { //유저 창 드롭다운
-    const [isDropdownView, setDropdownView] = useState(false)
-    const viewDropdown = () => {
-      setDropdownView(!isDropdownView)
-    }
-   
-    return(
-      //  모션 추가할 예정
-      <>
-        {isDropdownView && <button className="userbtn">계정관리</button>}
-        {isDropdownView && <button className="userbtn" onClick={() => navigate('/')}>로그아웃</button>}
-        <button className="userbtn" onClick={viewDropdown}>
-          <img src={userInfo?.profileImage} onError={(e) => {e.target.onerror = null; 
-            e.target.src = "image/user.png"}} className="headerimg"/> 
-          <h>{userInfo?.name}</h>
-        </button>
-      </>
-    )
+  //드롭다운 관리 ------------------------------------------------------------------
+  //유저 드롭다운
+  const [isDropdownView, setDropdownView] = useState(false);
+  const viewDropdown = () => {
+    setDropdownView((isDropdownView) => !isDropdownView);
+    console.log("Dropdown state:", !isDropdownView);
   }
 
-<<<<<<< Updated upstream
-  //팝업창 관리
-=======
   //폴더 현황 드롭다운
   const [openStorage, setOpenStorage] = useState({});
   const storageDropdown = (folderList, path = "/storage") => {
-    return folderList.map( (item) => {
-      
+    return folderList.map((item) => {
+      if (item.type === "folder"){
+        
+      }
     });
   }
   //팝업창 관리 --------------------------------------------------------------------
   //새 폴더 팝업
->>>>>>> Stashed changes
   const [isFolderPopupOpen, setFolderPopupOpen] = useState(false);
   const [folderName, setFolderName] = useState("");
   const openFolderPopup = () => {
     setFolderPopupOpen(true);
   };
-
   const closeFolderPopup = () => {
     setFolderPopupOpen(false);
     setFolderName(""); // 입력 필드 초기화
   };
-
   const handleCreateFolder = () => {
     console.log(`새 폴더 이름: ${folderName}`);
     if (folderName.trim() === '') {
@@ -105,14 +78,34 @@ function MainPage() {
       type: "folder",
       children: []
     };
-
     setFiles((prevFiles) => [...prevFiles, newFolder]);
-
     // 데이터베이스 적용 로직 추가
     closeFolderPopup(); // 팝업 닫기
   };
+  //설정 팝업
+  const [isSettingPopupOpen, setSettingPopupOpen] = useState(false);
+  const openSettingPopup = () => {
+    setSettingPopupOpen(true);
+    console.log("open :", isSettingPopupOpen);
+  }
+  const closeSettingPopup = () => {
+    //옵션 설정 로직 추가
+    setSettingPopupOpen(false);
+  }
+  // 파일 업로드 팝업
+  const handleFileUpload = (event) => {
+    const uploadedFiles = Array.from(event.target.files); // 선택된 파일 배열
+    const newFiles = uploadedFiles.map((file) => ({
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      lastModified: file.lastModified,
+    }));
+    setFiles((prevFiles) => [...prevFiles, ...newFiles]); // 기존 파일 목록에 추가
+    //업로드 로직 추가
+  };
 
-  //정렬 관리
+  //정렬 관리 ----------------------------------------------------------------------
   const [sortKey, setSortKey] = useState("name"); // 기본 정렬 기준
   const [sortOrder, setSortOrder] = useState("asc"); // 기본 정렬 순서
   const handleSort = (key) => {
@@ -126,29 +119,22 @@ function MainPage() {
     }
   };
   const sortedFiles = [...files].sort((a, b) => {
-    // 폴더 우선 정렬
-    if (a.type === "folder" && b.type !== "folder") return -1;
+    if (a.type === "folder" && b.type !== "folder") return -1; // 폴더 우선 정렬
     if (a.type !== "folder" && b.type === "folder") return 1;
-
     let valueA = a[sortKey];
     let valueB = b[sortKey];
-
-    // 특정 키에 대한 비교
-    if (sortKey === "lastModified") {
+    if (sortKey === "lastModified") { // 특정 키에 대한 비교
       valueA = new Date(valueA || 0);
       valueB = new Date(valueB || 0);
     } else if (sortKey === "size") {
       valueA = valueA || 0;
       valueB = valueB || 0;
     }
-
     if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
     if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
     return 0;
   });
 
-<<<<<<< Updated upstream
-=======
   //파일 선택 관리 -----------------------------------------------------------------
   const [selectedFiles, setSelectedFiles] = useState([]); // 선택된 파일/폴더
   const [previewFile, setPreviewFile] = useState(null); // 미리보기 파일
@@ -183,10 +169,8 @@ function MainPage() {
     }
   }
   //메인 페이지 --------------------------------------------------------------------
->>>>>>> Stashed changes
   return (
-    <div>
-      <body>
+    <body onClick={handleContainerClick}>
         {/* 헤더 */}
         <header>
           <button className="logobtn">
@@ -197,10 +181,6 @@ function MainPage() {
             <img src="image/search.png" className="searchimg" alt="search"/>
             <input className="searchtext" placeholder="검색"></input>
           </div>
-<<<<<<< Updated upstream
-          <UserDropdown/>
-          
-=======
           <>
             {isDropdownView && <button className="userbtn" onClick={openSettingPopup}>계정관리</button>}
             {isDropdownView && <button className="userbtn" onClick={() => navigate('/')}>로그아웃</button>}
@@ -210,32 +190,15 @@ function MainPage() {
               <h>{userInfo?.name}</h>
             </button>
           </>
->>>>>>> Stashed changes
         </header>
-
-        {/* 메인 부분 */}
+        {/* 메인 부분 시작 */}
         <main>
-          {/* 사이드 메뉴 */}
+          {/* 사이드 메뉴 시작 */}
           <div className="side-container">
             <button className="side-menu" onClick={openFolderPopup}>
               <img src="image/add-folder.png" className="sideimg" alt="folder"/>새 폴더
             </button>
             <button className="side-menu">
-<<<<<<< Updated upstream
-              <img src="image/file-upload.png" className="sideimg" />파일 업로드
-            </button>
-            <div className="storage-viewer">
-              <button className="storage-item">
-                <img src="image/spread.png" className="sideimg" />
-                <h >내 저장소</h>                 
-              </button>
-            </div>
-            <button className="side-menu">
-              <img src="image/trash.png" className="sideimg" />휴지통
-            </button>
-            <button className="side-menu">
-              <img src="image/setting.png" className="sideimg" />설정
-=======
               <img src="image/file-upload.png" className="sideimg" alt="file"/>
               <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
                 파일 업로드
@@ -259,17 +222,17 @@ function MainPage() {
             </button>
             <button className="side-menu" onClick={openSettingPopup}>
               <img src="image/setting.png" className="sideimg" alt="setting"/>설정
->>>>>>> Stashed changes
             </button>
           </div>
-          {/* 메인 컨테이너 */}
+          {/* 사이드 메뉴 끝 메인 컨테이너 시작*/}
           <div className="main-container">
-            {/* 최근 파일 부분
+            {/* 최근 파일 부분 할까 말까
             <div className="recent-container">최근 파일 </div> */}
-            {/* 파일 부분 */}
+            {/* 파일 부분 시작 */}
             <div className="all-file-container">
               {/* 현재 표시되는 파일 경로 */}
-              <h >{Path}</h>
+              <h >{currentPath}</h>
+              
               <table>
                 <thead>
                   <tr>
@@ -288,8 +251,6 @@ function MainPage() {
                   </tr>
                 </thead>
                 <tbody>
-<<<<<<< Updated upstream
-=======
                 {currentPath !== "/storage" && (
                   <tr>
                   <td onDoubleClick={handleGoBack} className="back-btn" colSpan='6'>
@@ -297,24 +258,18 @@ function MainPage() {
                     </td>
                   </tr>
                 )}
->>>>>>> Stashed changes
                 {sortedFiles.map((file, index) => (
-                  <tr key={index}>
+                  <tr key={index} onClick={(e) => handleClick(file, e)}
+                  onDoubleClick={() => handleDoubleClick(file)}
+                  className={selectedFiles.includes(file) ? "selected" : ""}>
                     <td className="file-icon-column">
-                      <img
-                        src={`image/${file.type === "folder" ? "folder" : "file"}.png`}
-                        alt={file.type}
-                        className="file-icon"
-                      />
+                      <img src={`image/${file.type === "folder" ? "folder" : "file"}.png`}
+                        alt={file.type} className="file-icon"/>
                     </td>
                     <td>{file.name}</td>
                     <td>{file.type === "folder" ? "-" : `${(file.size / 1024).toFixed(2)} KB`}</td>
                     <td>{file.type}</td>
-                    <td>
-                      {file.type === "folder"
-                        ? "-"
-                        : new Date(file.lastModified).toLocaleString()}
-                    </td>
+                    <td>{file.type === "folder" ? "-" : new Date(file.lastModified).toLocaleString()} </td>
                     <td className="menu-btn-column">
                       <button className="menu-btn">
                         <img src="image/menu.png" alt="Menu" />
@@ -325,9 +280,10 @@ function MainPage() {
               </tbody>
               </table>
             </div>
+            {/* 파일 부분 끝 */}
           </div>
         </main>
-
+        {/* 메인 부분 끝 팝업 부분 시작*/}
         {/* 새 폴더 팝업 */}
         {isFolderPopupOpen && (
           <div className="popup-overlay">
@@ -351,8 +307,36 @@ function MainPage() {
             </div>
           </div>
         )}
-      </body>
-    </div>
+        {/* 설정 팝업 */}
+        {isSettingPopupOpen && (
+          <div class="popup-overlay">
+            <div class="popup-setting">
+              <div class="setting-menu">
+                <button> 계정설정</button>
+                <button> 환경설정</button>
+              </div>
+              <div class="setting-main">
+                <h>설정</h>
+                <h>체크박스 + 설정 내용</h>
+                <button class="popup-btn" onClick={closeSettingPopup}>닫기</button>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* 미리보기 창 */}
+        {previewFile && (
+          <div className="preview-overlay" onClick={() => setPreviewFile(null)}>
+            <div className="preview-container">
+              <h2>미리보기: {previewFile.name}</h2>
+              <p>파일 유형: {previewFile.type}</p>
+              <p>파일 크기: {(previewFile.size / 1024).toFixed(2)} KB</p>
+              <p>마지막 수정: {new Date(previewFile.lastModified).toLocaleString()}</p>
+              <button onClick={() => setPreviewFile(null)}>닫기</button>
+            </div>
+          </div>
+        )}
+        {/* 팝업 부분 끝 */}
+    </body>
   );
 }
 
