@@ -1,6 +1,6 @@
 package com.cloudbox.backend.file.domain;
 
-import com.cloudbox.backend.common.domain.BaseTimeEntity;
+import com.cloudbox.backend.common.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FileShare extends BaseTimeEntity {
+public class FileShare extends BaseEntity {
 
     @Id
     @GeneratedValue

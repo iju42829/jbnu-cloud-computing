@@ -4,9 +4,7 @@ import com.cloudbox.backend.common.argumentResolver.annotation.Login;
 import com.cloudbox.backend.common.dto.MemberSessionDto;
 import com.cloudbox.backend.common.dto.Response;
 import com.cloudbox.backend.file.dto.request.FileShareCreateRequest;
-import com.cloudbox.backend.file.dto.response.FileDownloadResponse;
-import com.cloudbox.backend.file.dto.response.FileResponse;
-import com.cloudbox.backend.file.dto.response.FileShareCreateResponse;
+import com.cloudbox.backend.file.dto.response.*;
 import com.cloudbox.backend.file.service.interfaces.command.FileShareCommandService;
 import com.cloudbox.backend.file.service.interfaces.query.FileQueryService;
 import com.cloudbox.backend.file.service.interfaces.query.FileShareQueryService;
@@ -34,6 +32,12 @@ public class FileShareController {
     @Value("${domain.server-url}")
     private String url;
 
+    @GetMapping
+    public ResponseEntity<Response<FileShareResponseList>> retrieveFileShareList(@Login MemberSessionDto memberSessionDto) {
+        FileShareResponseList sharedFiles = fileShareQueryService.getSharedFiles(memberSessionDto);
+
+        return new ResponseEntity<>(Response.createResponse(HttpServletResponse.SC_OK, "공유 파일 목록 조회에 성공했습니다.", sharedFiles), HttpStatus.OK);
+    }
 
     @PostMapping
     public ResponseEntity<Response<FileShareCreateResponse>> addFileShare(@Login MemberSessionDto memberSessionDto,
