@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { data, useLocation, useNavigate } from 'react-router-dom';
 import './MainPage.css'
  
   //로그인 창에서 넘어옴
@@ -10,21 +10,41 @@ import './MainPage.css'
   //초기화 시'내 저장소'로 이동하도록 함
   //페이지 새로고침 시 다시 초기화하도록 함
   //사이드 컨테이너의 내 저장소 부분을 초기화
-  //내 저장소의 구성을 확인할 수 있도록 함.
+  //storage의 구성을 확인할 수 있도록 함.
   //파일 제외, 폴더만 표시.
   //옵션 파일의 내용에 맞춰 사용자 설정 초기화(전체 뷰에 관여)
   //옵션이 변경될 경우 확인 버튼을 눌렀을 때 옵션 파일의 내용을 수정하고, 업데이트하는 형식
 
 
 function MainPage() {
-
   //페이지 이동, 이전 페이지의 데이터 가져오기
   const navigate = useNavigate();  
   const location = useLocation();
+<<<<<<< Updated upstream
   const {userInfo, storageInfo, options} = location.state || {};
 
   const [files, setFiles] = useState(storageInfo || []);
 
+=======
+  const {userInfo, options} = location.state || {};
+  const [currentPath, setCurrentPath] = useState("/storage");
+
+  useEffect(() => {
+    updatePath("/storage");
+  },[]);
+  const [files, setFiles] = useState([]);
+
+  const updatePath = async (path) => {
+    console.log(`${path}`);
+    const response = await fetch(`${path}.json`);
+    if(!response.ok) {
+       throw new Error('http error');
+      }
+      const data = await response.json();
+      setFiles(data);
+      setCurrentPath(path);
+    }
+>>>>>>> Stashed changes
 
   //현재 위치 관리
   const Path = "/내 저장소"
@@ -50,7 +70,19 @@ function MainPage() {
     )
   }
 
+<<<<<<< Updated upstream
   //팝업창 관리
+=======
+  //폴더 현황 드롭다운
+  const [openStorage, setOpenStorage] = useState({});
+  const storageDropdown = (folderList, path = "/storage") => {
+    return folderList.map( (item) => {
+      
+    });
+  }
+  //팝업창 관리 --------------------------------------------------------------------
+  //새 폴더 팝업
+>>>>>>> Stashed changes
   const [isFolderPopupOpen, setFolderPopupOpen] = useState(false);
   const [folderName, setFolderName] = useState("");
   const openFolderPopup = () => {
@@ -115,21 +147,70 @@ function MainPage() {
     return 0;
   });
 
+<<<<<<< Updated upstream
+=======
+  //파일 선택 관리 -----------------------------------------------------------------
+  const [selectedFiles, setSelectedFiles] = useState([]); // 선택된 파일/폴더
+  const [previewFile, setPreviewFile] = useState(null); // 미리보기 파일
+  const handleContainerClick = (event) => {// 클릭 시 강조 표시
+    if (!event.target.closest("tr")) { // 클릭한 곳이 파일/폴더가 아닌 경우에만 선택 해제
+      setSelectedFiles([]);
+    }
+  };
+  const handleClick = (file, event) => {
+    if (event.ctrlKey) {// Ctrl 누르고 클릭하면 다중 선택
+      setSelectedFiles((prevSelected) =>
+        prevSelected.includes(file)
+          ? prevSelected.filter((f) => f !== file) // 이미 선택된 경우 해제
+          : [...prevSelected, file]
+      );
+    } else {
+      setSelectedFiles([file]);// 단일 선택
+    }
+  };
+  const handleDoubleClick = (file) => { // 더블 클릭 이벤트
+    if (file.type === "folder") {
+      updatePath(`${currentPath}/${file.name}`);
+    } else {
+      // 파일인 경우 미리보기 표시
+      setPreviewFile(file);
+    }
+  };
+  const handleGoBack = () => {
+    if(currentPath !== "/storage"){
+      const parentPath = currentPath.split("/").slice(0,-1).join("/") || "/storage";
+      updatePath(parentPath);
+    }
+  }
+  //메인 페이지 --------------------------------------------------------------------
+>>>>>>> Stashed changes
   return (
     <div>
       <body>
         {/* 헤더 */}
         <header>
           <button className="logobtn">
-            <img src="image/logo.png" className="logoimg"/>
+            <img src="image/logo.png" className="logoimg" alt="logo"/>
             <h className="logofont">CLOUDBOX</h>
           </button>        
           <div className="searchbar">
-            <img src="image/search.png" className="searchimg" />
+            <img src="image/search.png" className="searchimg" alt="search"/>
             <input className="searchtext" placeholder="검색"></input>
           </div>
+<<<<<<< Updated upstream
           <UserDropdown/>
           
+=======
+          <>
+            {isDropdownView && <button className="userbtn" onClick={openSettingPopup}>계정관리</button>}
+            {isDropdownView && <button className="userbtn" onClick={() => navigate('/')}>로그아웃</button>}
+            <button className="userbtn" onClick={viewDropdown}>
+              <img src={userInfo?.profileImage} onError={(e) => {e.target.onerror = null; 
+                e.target.src = "image/user.png"}} className="headerimg" alt="user"/> 
+              <h>{userInfo?.name}</h>
+            </button>
+          </>
+>>>>>>> Stashed changes
         </header>
 
         {/* 메인 부분 */}
@@ -137,9 +218,10 @@ function MainPage() {
           {/* 사이드 메뉴 */}
           <div className="side-container">
             <button className="side-menu" onClick={openFolderPopup}>
-              <img src="image/add-folder.png" className="sideimg" />새 폴더
+              <img src="image/add-folder.png" className="sideimg" alt="folder"/>새 폴더
             </button>
             <button className="side-menu">
+<<<<<<< Updated upstream
               <img src="image/file-upload.png" className="sideimg" />파일 업로드
             </button>
             <div className="storage-viewer">
@@ -153,6 +235,31 @@ function MainPage() {
             </button>
             <button className="side-menu">
               <img src="image/setting.png" className="sideimg" />설정
+=======
+              <img src="image/file-upload.png" className="sideimg" alt="file"/>
+              <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
+                파일 업로드
+              </label>
+              <input
+                id="file-upload"
+                type="file"
+                multiple
+                style={{ display: "none" }}
+                onChange={handleFileUpload}
+              />
+            </button>
+            <div className="storage-viewer">
+              <button className="storage-item">
+                <img src={`image/spread.png`}  className="sideimg" alt="spread"/>
+                <h >내 저장소</h>                 
+              </button>
+            </div>
+            <button className="side-menu" >
+              <img src="image/trash.png" className="sideimg" alt="bin"/>휴지통
+            </button>
+            <button className="side-menu" onClick={openSettingPopup}>
+              <img src="image/setting.png" className="sideimg" alt="setting"/>설정
+>>>>>>> Stashed changes
             </button>
           </div>
           {/* 메인 컨테이너 */}
@@ -181,6 +288,16 @@ function MainPage() {
                   </tr>
                 </thead>
                 <tbody>
+<<<<<<< Updated upstream
+=======
+                {currentPath !== "/storage" && (
+                  <tr>
+                  <td onDoubleClick={handleGoBack} className="back-btn" colSpan='6'>
+                    /..
+                    </td>
+                  </tr>
+                )}
+>>>>>>> Stashed changes
                 {sortedFiles.map((file, index) => (
                   <tr key={index}>
                     <td className="file-icon-column">

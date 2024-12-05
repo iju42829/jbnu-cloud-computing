@@ -1,5 +1,10 @@
 [
   {
+    "name": "Documents",
+    "type": "folder",
+    "children": []
+  },
+  {
     "name": "example1.txt",
     "size": 1024,
     "type": "text/plain",

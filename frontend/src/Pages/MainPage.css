@@ -305,3 +305,43 @@ main {
 .menu-btn:hover img {
   filter: brightness(0.8); /* 호버 시 약간 어두운 효과 */
 }
+<<<<<<< Updated upstream
+=======
+
+/* 행 선택 시 강조 */
+.selected {
+  background-color: #aab3d8 !important; 
+}
+
+/* 미리보기 오버레이 */
+.preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* 미리보기 컨테이너 */
+.preview-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  text-align: center;
+}
+
+.setting-menu {
+  display: flex;
+  flex-direction: column;
+}
+.setting-main {
+  display: flex;
+  flex-direction: column;
+}
+>>>>>>> Stashed changes
