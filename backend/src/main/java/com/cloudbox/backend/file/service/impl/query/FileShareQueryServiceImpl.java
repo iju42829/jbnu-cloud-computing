@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -25,7 +26,7 @@ public class FileShareQueryServiceImpl implements FileShareQueryService {
 
     @Override
     public boolean validateFileShare(Long fileId, String uuid) {
-        boolean validate = fileShareRepository.existsByFileIdAndUuid(fileId, uuid);
+        boolean validate = fileShareRepository.existsByFileIdAndUuidAndExpirationDateAfter(fileId, uuid, LocalDateTime.now());
 
         if (!validate)
             throw new FileNotFoundException("해당 파일에 접근할 수 없습니다.");
