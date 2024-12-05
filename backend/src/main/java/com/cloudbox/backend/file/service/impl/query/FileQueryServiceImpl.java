@@ -58,4 +58,25 @@ public class FileQueryServiceImpl implements FileQueryService {
 
         return new FileDownloadResponse(new InputStreamResource(s3Object), file.getFileName());
     }
+
+    @Override
+    public FileDownloadResponse downloadSharedFile(Long fileId) {
+        File file = getFileEntityById(fileId);
+
+        ResponseInputStream<GetObjectResponse> s3Object = s3StorageQueryService.downloadFile(file.getFilePath());
+
+        return new FileDownloadResponse(new InputStreamResource(s3Object), file.getFileName());
+    }
+
+    @Override
+    public FileResponse getFileResponsesById(Long fileId) {
+        File file = getFileEntityById(fileId);
+
+        return FileResponse.fromFile(file);
+    }
+
+    @Override
+    public File getFileEntityById(Long fileId) {
+        return fileRepository.findById(fileId).orElseThrow(FileNotFoundException::new);
+    }
 }
