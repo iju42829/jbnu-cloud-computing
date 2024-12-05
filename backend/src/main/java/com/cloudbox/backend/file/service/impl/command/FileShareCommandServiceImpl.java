@@ -10,6 +10,7 @@ import com.cloudbox.backend.file.service.interfaces.query.FileQueryService;
 import com.cloudbox.backend.file.service.interfaces.query.FileShareQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,5 +43,12 @@ public class FileShareCommandServiceImpl implements FileShareCommandService {
         FileShare fileShare = fileShareQueryService.getFileShareEntityByIdAndCreateBy(memberSessionDto, fileShareId);
 
         fileShareRepository.delete(fileShare);
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void cleanExpiredFiles() {
+        LocalDateTime now = LocalDateTime.now();
+        int deletedCount = fileShareRepository.deleteByExpirationDateBefore(now);
+        log.info("만료된 공유 파일 {}개 삭제 완료.", deletedCount);
     }
 }
