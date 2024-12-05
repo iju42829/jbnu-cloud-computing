@@ -15,10 +15,9 @@
     font-family: "Roboto Condensed", sans-serif;
 }
 
-  
 
 /* 배경 스타일 */
-body {
+body{
     display: flex;
     justify-content: center;
     align-items: center;

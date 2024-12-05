@@ -22,31 +22,28 @@ function MainPage() {
   const navigate = useNavigate();  
   const location = useLocation();
   const {userInfo, storageInfo, options} = location.state || {};
-
   const [files, setFiles] = useState(storageInfo || []);
 
   //현재 위치 관리
-  const Path = "/내 저장소"
+  const [currentPath, setCurrnetPath] = useState( "/내 저장소");
 
-  //드롭다운 관리
+  //드롭다운 관리 ------------------------------------------------------------------
+  //유저 드롭다운
   const [isDropdownView, setDropdownView] = useState(false);
   const viewDropdown = () => {
     setDropdownView((isDropdownView) => !isDropdownView);
     console.log("Dropdown state:", !isDropdownView);
   }
 
+  //폴더 현황 드롭다운
   const [expandedFolders, setExpandedFolders] = useState({}); // 폴더 열림 상태 관리
-
-  // 폴더 열림/닫힘 토글
-  const toggleFolder = (path) => {
+  const toggleFolder = (currentPath) => {// 폴더 열림/닫힘 토글
     setExpandedFolders((prevState) => ({
       ...prevState,
-      [path]: !prevState[path], // 현재 경로의 열림 상태를 토글
+      [currentPath]: !prevState[currentPath], // 현재 경로의 열림 상태를 토글
     }));
   };
-
-  // 폴더 계층 구조 렌더링
-  const renderFolders = (folderList, parentPath = "") => {
+  const renderFolders = (folderList, parentPath = "") => { // 폴더 계층 구조 렌더링
     return folderList.map((item) => {
       if (item.type === "folder") {
         const currentPath = `${parentPath}/${item.name}`;
@@ -72,18 +69,17 @@ function MainPage() {
     });
   };
 
-  //팝업창 관리
+  //팝업창 관리 --------------------------------------------------------------------
+  //새 폴더 팝업
   const [isFolderPopupOpen, setFolderPopupOpen] = useState(false);
   const [folderName, setFolderName] = useState("");
   const openFolderPopup = () => {
     setFolderPopupOpen(true);
   };
-
   const closeFolderPopup = () => {
     setFolderPopupOpen(false);
     setFolderName(""); // 입력 필드 초기화
   };
-
   const handleCreateFolder = () => {
     console.log(`새 폴더 이름: ${folderName}`);
     if (folderName.trim() === '') {
@@ -95,22 +91,21 @@ function MainPage() {
       type: "folder",
       children: []
     };
-
     setFiles((prevFiles) => [...prevFiles, newFolder]);
-
     // 데이터베이스 적용 로직 추가
     closeFolderPopup(); // 팝업 닫기
   };
+  //설정 팝업
   const [isSettingPopupOpen, setSettingPopupOpen] = useState(false);
   const openSettingPopup = () => {
     setSettingPopupOpen(true);
     console.log("open :", isSettingPopupOpen);
   }
   const closeSettingPopup = () => {
-    //옵션 설정
+    //옵션 설정 로직 추가
     setSettingPopupOpen(false);
   }
-  // 파일 업로드 핸들러
+  // 파일 업로드 팝업
   const handleFileUpload = (event) => {
     const uploadedFiles = Array.from(event.target.files); // 선택된 파일 배열
     const newFiles = uploadedFiles.map((file) => ({
@@ -120,10 +115,10 @@ function MainPage() {
       lastModified: file.lastModified,
     }));
     setFiles((prevFiles) => [...prevFiles, ...newFiles]); // 기존 파일 목록에 추가
-    //업로드
+    //업로드 로직 추가
   };
 
-  //정렬 관리
+  //정렬 관리 ----------------------------------------------------------------------
   const [sortKey, setSortKey] = useState("name"); // 기본 정렬 기준
   const [sortOrder, setSortOrder] = useState("asc"); // 기본 정렬 순서
   const handleSort = (key) => {
@@ -137,62 +132,56 @@ function MainPage() {
     }
   };
   const sortedFiles = [...files].sort((a, b) => {
-    // 폴더 우선 정렬
-    if (a.type === "folder" && b.type !== "folder") return -1;
+    if (a.type === "folder" && b.type !== "folder") return -1; // 폴더 우선 정렬
     if (a.type !== "folder" && b.type === "folder") return 1;
-
     let valueA = a[sortKey];
     let valueB = b[sortKey];
-
-    // 특정 키에 대한 비교
-    if (sortKey === "lastModified") {
+    if (sortKey === "lastModified") { // 특정 키에 대한 비교
       valueA = new Date(valueA || 0);
       valueB = new Date(valueB || 0);
     } else if (sortKey === "size") {
       valueA = valueA || 0;
       valueB = valueB || 0;
     }
-
     if (valueA < valueB) return sortOrder === "asc" ? -1 : 1;
     if (valueA > valueB) return sortOrder === "asc" ? 1 : -1;
     return 0;
   });
 
+  //파일 선택 관리 -----------------------------------------------------------------
   const [selectedFiles, setSelectedFiles] = useState([]); // 선택된 파일/폴더
   const [previewFile, setPreviewFile] = useState(null); // 미리보기 파일
-
-  // 클릭 시 강조 표시
-  const handleContainerClick = (event) => {
-    // 클릭한 곳이 파일/폴더가 아닌 경우에만 선택 해제
-    if (!event.target.closest("tr")) {
+  const handleContainerClick = (event) => {// 클릭 시 강조 표시
+    if (!event.target.closest("tr")) { // 클릭한 곳이 파일/폴더가 아닌 경우에만 선택 해제
       setSelectedFiles([]);
     }
   };
-
   const handleClick = (file, event) => {
-    if (event.ctrlKey) {
-      // Ctrl 누르고 클릭하면 다중 선택
+    if (event.ctrlKey) {// Ctrl 누르고 클릭하면 다중 선택
       setSelectedFiles((prevSelected) =>
         prevSelected.includes(file)
           ? prevSelected.filter((f) => f !== file) // 이미 선택된 경우 해제
           : [...prevSelected, file]
       );
     } else {
-      // 단일 선택
-      setSelectedFiles([file]);
+      setSelectedFiles([file]);// 단일 선택
     }
   };
-
-  // 더블 클릭 이벤트
-  const handleDoubleClick = (file) => {
+  const handleDoubleClick = (file) => { // 더블 클릭 이벤트
     if (file.type === "folder") {
-      // 폴더인 경우 해당 경로로 진입
+    setCurrnetPath(`${currentPath}/${file.name}`);
     } else {
       // 파일인 경우 미리보기 표시
       setPreviewFile(file);
     }
   };
-
+  const handleGoBack = () => {
+    if(currentPath !== "/내 저장소"){
+      const parentPath = currentPath.split("/").slice(0,-1).join("/") || "/내 저장소";
+      setCurrnetPath(parentPath);
+    }
+  }
+  //메인 페이지 --------------------------------------------------------------------
   return (
     <body onClick={handleContainerClick}>
         {/* 헤더 */}
@@ -206,7 +195,7 @@ function MainPage() {
             <input className="searchtext" placeholder="검색"></input>
           </div>
           <>
-            {isDropdownView && <button className="userbtn">계정관리</button>}
+            {isDropdownView && <button className="userbtn" onClick={openSettingPopup}>계정관리</button>}
             {isDropdownView && <button className="userbtn" onClick={() => navigate('/')}>로그아웃</button>}
             <button className="userbtn" onClick={viewDropdown}>
               <img src={userInfo?.profileImage} onError={(e) => {e.target.onerror = null; 
@@ -215,9 +204,9 @@ function MainPage() {
             </button>
           </>
         </header>
-        {/* 메인 부분 */}
+        {/* 메인 부분 시작 */}
         <main>
-          {/* 사이드 메뉴 */}
+          {/* 사이드 메뉴 시작 */}
           <div className="side-container">
             <button className="side-menu" onClick={openFolderPopup}>
               <img src="image/add-folder.png" className="sideimg" />새 폴더
@@ -253,14 +242,15 @@ function MainPage() {
               <img src="image/setting.png" className="sideimg" />설정
             </button>
           </div>
-          {/* 메인 컨테이너 */}
+          {/* 사이드 메뉴 끝 메인 컨테이너 시작*/}
           <div className="main-container">
-            {/* 최근 파일 부분
+            {/* 최근 파일 부분 할까 말까
             <div className="recent-container">최근 파일 </div> */}
-            {/* 파일 부분 */}
+            {/* 파일 부분 시작 */}
             <div className="all-file-container">
               {/* 현재 표시되는 파일 경로 */}
-              <h >{Path}</h>
+              <h >{currentPath}</h>
+              
               <table>
                 <thead>
                   <tr>
@@ -279,6 +269,13 @@ function MainPage() {
                   </tr>
                 </thead>
                 <tbody>
+                {currentPath !== "/내 저장소" && (
+                  <tr>
+                  <td onDoubleClick={handleGoBack} className="back-btn" colSpan='6'>
+                    /..
+                    </td>
+                  </tr>
+                )}
                 {sortedFiles.map((file, index) => (
                   <tr key={index} onClick={(e) => handleClick(file, e)}
                   onDoubleClick={() => handleDoubleClick(file)}
@@ -301,9 +298,10 @@ function MainPage() {
               </tbody>
               </table>
             </div>
+            {/* 파일 부분 끝 */}
           </div>
         </main>
-
+        {/* 메인 부분 끝 팝업 부분 시작*/}
         {/* 새 폴더 팝업 */}
         {isFolderPopupOpen && (
           <div className="popup-overlay">
@@ -355,6 +353,7 @@ function MainPage() {
             </div>
           </div>
         )}
+        {/* 팝업 부분 끝 */}
     </body>
   );
 }
