@@ -2,6 +2,7 @@ body {
   position: relative;
   min-height: 100vh;
   background-color: #aaaaaa;
+  user-select: none;
 }
 /* 이미지 파일 */
 
@@ -32,6 +33,7 @@ header {
 .userbtn:hover {
   border-radius: 12px;
   background-color: #a1a1a1;
+  cursor: pointer;
 }
 
 /* 헤더 - logo */
@@ -41,6 +43,7 @@ header {
   align-items: center;
   background-color: transparent;
   border: transparent;
+  cursor: pointer;
 }
 .logoimg {
   width: 50px;
@@ -111,6 +114,7 @@ main {
   margin: 1px;
   padding: 5px;
   font-size: 18px;
+  cursor: pointer;
 }
 .side-menu:hover {
   border-radius: 20px;
@@ -139,6 +143,7 @@ main {
 .storage-item:hover {
   border-radius: 20px;
   background-color: #6e6e6ea1;
+  cursor: pointer;
 }
 
 /* 파일 메뉴 */
@@ -212,6 +217,16 @@ main {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.popup-setting{
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: row;
+}
 .popup-input {
   width: 100%;
   padding: 8px;
@@ -262,6 +277,7 @@ main {
 .all-file-container td {
   padding: 10px; /* 셀 내부 여백 */
   border-bottom: 1px solid #a1a1a1; /* 행 구분선 */
+  white-space: nowrap;
 }
 
 .all-file-container th {
@@ -269,6 +285,15 @@ main {
   /*background-color: #f4f4f4; /* 헤더 배경색 */
   border-bottom: 1px solid #a1a1a1; /* 행 구분선 */
   font-weight: bold;
+  white-space: nowrap;
+}
+
+.all-file-container th:hover {
+  cursor: default;
+}
+
+.all-file-container th span.sort-icon:hover {
+  cursor: pointer;
 }
 
 .all-file-container tbody tr:hover {
@@ -304,4 +329,41 @@ main {
 
 .menu-btn:hover img {
   filter: brightness(0.8); /* 호버 시 약간 어두운 효과 */
+}
+
+/* 행 선택 시 강조 */
+.selected {
+  background-color: #e0f7fa !important; 
+}
+
+/* 미리보기 오버레이 */
+.preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* 미리보기 컨테이너 */
+.preview-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  text-align: center;
+}
+
+.setting-menu {
+  display: flex;
+  flex-direction: column;
+}
+.setting-main {
+  display: flex;
+  flex-direction: column;
 }

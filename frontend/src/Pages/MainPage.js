@@ -25,30 +25,52 @@ function MainPage() {
 
   const [files, setFiles] = useState(storageInfo || []);
 
-
   //현재 위치 관리
   const Path = "/내 저장소"
 
   //드롭다운 관리
-  const UserDropdown = () => { //유저 창 드롭다운
-    const [isDropdownView, setDropdownView] = useState(false)
-    const viewDropdown = () => {
-      setDropdownView(!isDropdownView)
-    }
-   
-    return(
-      //  모션 추가할 예정
-      <>
-        {isDropdownView && <button className="userbtn">계정관리</button>}
-        {isDropdownView && <button className="userbtn" onClick={() => navigate('/')}>로그아웃</button>}
-        <button className="userbtn" onClick={viewDropdown}>
-          <img src={userInfo?.profileImage} onError={(e) => {e.target.onerror = null; 
-            e.target.src = "image/user.png"}} className="headerimg"/> 
-          <h>{userInfo?.name}</h>
-        </button>
-      </>
-    )
+  const [isDropdownView, setDropdownView] = useState(false);
+  const viewDropdown = () => {
+    setDropdownView((isDropdownView) => !isDropdownView);
+    console.log("Dropdown state:", !isDropdownView);
   }
+
+  const [expandedFolders, setExpandedFolders] = useState({}); // 폴더 열림 상태 관리
+
+  // 폴더 열림/닫힘 토글
+  const toggleFolder = (path) => {
+    setExpandedFolders((prevState) => ({
+      ...prevState,
+      [path]: !prevState[path], // 현재 경로의 열림 상태를 토글
+    }));
+  };
+
+  // 폴더 계층 구조 렌더링
+  const renderFolders = (folderList, parentPath = "") => {
+    return folderList.map((item) => {
+      if (item.type === "folder") {
+        const currentPath = `${parentPath}/${item.name}`;
+        return (
+          <div key={currentPath} className="folder-item">
+            <button className="storage-item" onClick={() => toggleFolder(currentPath)}>
+              <img
+                src={`image/${expandedFolders[currentPath] ? "fold" : "spread"}.png`}
+                alt="folder-icon"
+                className="sideimg"
+              />
+              {item.name}
+            </button>
+            {expandedFolders[currentPath] && item.children && (
+              <div className="nested-folders">
+                {renderFolders(item.children, currentPath)}
+              </div>
+            )}
+          </div>
+        );
+      }
+      return null; // 폴더가 아닌 파일은 사이드 메뉴에서 표시하지 않음
+    });
+  };
 
   //팝업창 관리
   const [isFolderPopupOpen, setFolderPopupOpen] = useState(false);
@@ -78,6 +100,27 @@ function MainPage() {
 
     // 데이터베이스 적용 로직 추가
     closeFolderPopup(); // 팝업 닫기
+  };
+  const [isSettingPopupOpen, setSettingPopupOpen] = useState(false);
+  const openSettingPopup = () => {
+    setSettingPopupOpen(true);
+    console.log("open :", isSettingPopupOpen);
+  }
+  const closeSettingPopup = () => {
+    //옵션 설정
+    setSettingPopupOpen(false);
+  }
+  // 파일 업로드 핸들러
+  const handleFileUpload = (event) => {
+    const uploadedFiles = Array.from(event.target.files); // 선택된 파일 배열
+    const newFiles = uploadedFiles.map((file) => ({
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      lastModified: file.lastModified,
+    }));
+    setFiles((prevFiles) => [...prevFiles, ...newFiles]); // 기존 파일 목록에 추가
+    //업로드
   };
 
   //정렬 관리
@@ -115,9 +158,43 @@ function MainPage() {
     return 0;
   });
 
+  const [selectedFiles, setSelectedFiles] = useState([]); // 선택된 파일/폴더
+  const [previewFile, setPreviewFile] = useState(null); // 미리보기 파일
+
+  // 클릭 시 강조 표시
+  const handleContainerClick = (event) => {
+    // 클릭한 곳이 파일/폴더가 아닌 경우에만 선택 해제
+    if (!event.target.closest("tr")) {
+      setSelectedFiles([]);
+    }
+  };
+
+  const handleClick = (file, event) => {
+    if (event.ctrlKey) {
+      // Ctrl 누르고 클릭하면 다중 선택
+      setSelectedFiles((prevSelected) =>
+        prevSelected.includes(file)
+          ? prevSelected.filter((f) => f !== file) // 이미 선택된 경우 해제
+          : [...prevSelected, file]
+      );
+    } else {
+      // 단일 선택
+      setSelectedFiles([file]);
+    }
+  };
+
+  // 더블 클릭 이벤트
+  const handleDoubleClick = (file) => {
+    if (file.type === "folder") {
+      // 폴더인 경우 해당 경로로 진입
+    } else {
+      // 파일인 경우 미리보기 표시
+      setPreviewFile(file);
+    }
+  };
+
   return (
-    <div>
-      <body>
+    <body onClick={handleContainerClick}>
         {/* 헤더 */}
         <header>
           <button className="logobtn">
@@ -128,10 +205,16 @@ function MainPage() {
             <img src="image/search.png" className="searchimg" />
             <input className="searchtext" placeholder="검색"></input>
           </div>
-          <UserDropdown/>
-          
+          <>
+            {isDropdownView && <button className="userbtn">계정관리</button>}
+            {isDropdownView && <button className="userbtn" onClick={() => navigate('/')}>로그아웃</button>}
+            <button className="userbtn" onClick={viewDropdown}>
+              <img src={userInfo?.profileImage} onError={(e) => {e.target.onerror = null; 
+                e.target.src = "image/user.png"}} className="headerimg"/> 
+              <h>{userInfo?.name}</h>
+            </button>
+          </>
         </header>
-
         {/* 메인 부분 */}
         <main>
           {/* 사이드 메뉴 */}
@@ -140,18 +223,33 @@ function MainPage() {
               <img src="image/add-folder.png" className="sideimg" />새 폴더
             </button>
             <button className="side-menu">
-              <img src="image/file-upload.png" className="sideimg" />파일 업로드
+              <img src="image/file-upload.png" className="sideimg" />
+              <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
+                파일 업로드
+              </label>
+              <input
+                id="file-upload"
+                type="file"
+                multiple
+                style={{ display: "none" }}
+                onChange={handleFileUpload}
+              />
             </button>
             <div className="storage-viewer">
-              <button className="storage-item">
-                <img src="image/spread.png" className="sideimg" />
+              <button className="storage-item" onClick={() => toggleFolder("/내 저장소")}>
+                <img src={`image/${expandedFolders["/내 저장소"] ? "fold" : "spread"}.png`}  className="sideimg" />
                 <h >내 저장소</h>                 
               </button>
+              {expandedFolders["/내 저장소"] && (
+                <div className="nested-folders">
+                  {renderFolders(files, "/내 저장소")}
+                </div>
+              )}
             </div>
-            <button className="side-menu">
+            <button className="side-menu" >
               <img src="image/trash.png" className="sideimg" />휴지통
             </button>
-            <button className="side-menu">
+            <button className="side-menu" onClick={openSettingPopup}>
               <img src="image/setting.png" className="sideimg" />설정
             </button>
           </div>
@@ -182,22 +280,17 @@ function MainPage() {
                 </thead>
                 <tbody>
                 {sortedFiles.map((file, index) => (
-                  <tr key={index}>
+                  <tr key={index} onClick={(e) => handleClick(file, e)}
+                  onDoubleClick={() => handleDoubleClick(file)}
+                  className={selectedFiles.includes(file) ? "selected" : ""}>
                     <td className="file-icon-column">
-                      <img
-                        src={`image/${file.type === "folder" ? "folder" : "file"}.png`}
-                        alt={file.type}
-                        className="file-icon"
-                      />
+                      <img src={`image/${file.type === "folder" ? "folder" : "file"}.png`}
+                        alt={file.type} className="file-icon"/>
                     </td>
                     <td>{file.name}</td>
                     <td>{file.type === "folder" ? "-" : `${(file.size / 1024).toFixed(2)} KB`}</td>
                     <td>{file.type}</td>
-                    <td>
-                      {file.type === "folder"
-                        ? "-"
-                        : new Date(file.lastModified).toLocaleString()}
-                    </td>
+                    <td>{file.type === "folder" ? "-" : new Date(file.lastModified).toLocaleString()} </td>
                     <td className="menu-btn-column">
                       <button className="menu-btn">
                         <img src="image/menu.png" alt="Menu" />
@@ -234,8 +327,35 @@ function MainPage() {
             </div>
           </div>
         )}
-      </body>
-    </div>
+        {/* 설정 팝업 */}
+        {isSettingPopupOpen && (
+          <div class="popup-overlay">
+            <div class="popup-setting">
+              <div class="setting-menu">
+                <button> 계정설정</button>
+                <button> 환경설정</button>
+              </div>
+              <div class="setting-main">
+                <h>설정</h>
+                <h>체크박스 + 설정 내용</h>
+                <button class="popup-btn" onClick={closeSettingPopup}>닫기</button>
+              </div>
+            </div>
+          </div>
+        )}
+        {/* 미리보기 창 */}
+        {previewFile && (
+          <div className="preview-overlay" onClick={() => setPreviewFile(null)}>
+            <div className="preview-container">
+              <h2>미리보기: {previewFile.name}</h2>
+              <p>파일 유형: {previewFile.type}</p>
+              <p>파일 크기: {(previewFile.size / 1024).toFixed(2)} KB</p>
+              <p>마지막 수정: {new Date(previewFile.lastModified).toLocaleString()}</p>
+              <button onClick={() => setPreviewFile(null)}>닫기</button>
+            </div>
+          </div>
+        )}
+    </body>
   );
 }
 
