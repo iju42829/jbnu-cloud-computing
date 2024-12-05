@@ -36,7 +36,8 @@ public class FileShareQueryServiceImpl implements FileShareQueryService {
 
     @Override
     public FileShareResponseList getSharedFiles(MemberSessionDto memberSessionDto) {
-        List<FileShare> fileShareList = fileShareRepository.findAllByCreateBy(memberSessionDto.getUsername());
+        List<FileShare> fileShareList = fileShareRepository
+                .findAllByCreateByAndExpirationDateAfter(memberSessionDto.getUsername(), LocalDateTime.now());
 
         return new FileShareResponseList(fileShareList.stream()
                 .map(FileShareResponse::fromFileShare)

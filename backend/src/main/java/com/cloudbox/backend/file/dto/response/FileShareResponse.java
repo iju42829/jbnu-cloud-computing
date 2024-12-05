@@ -14,6 +14,9 @@ import java.time.LocalDateTime;
 public class FileShareResponse {
     private Long fileShareId;
     private LocalDateTime expirationDate;
+    private String uuid;
+
+    private Long fileId;
     private String fileName;
     private String createBy;
     private Long size;
@@ -21,6 +24,8 @@ public class FileShareResponse {
     public static FileShareResponse fromFileShare(FileShare fileShare) {
         return new FileShareResponse(fileShare.getId(),
                 fileShare.getExpirationDate(),
+                fileShare.getUuid(),
+                fileShare.getFile().getId(),
                 fileShare.getFile().getFileName(),
                 fileShare.getCreateBy(),
                 fileShare.getFile().getSize());

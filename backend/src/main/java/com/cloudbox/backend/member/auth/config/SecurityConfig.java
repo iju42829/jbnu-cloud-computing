@@ -65,8 +65,8 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/api/sign-up").permitAll()
+                        .requestMatchers("/api/fileShare/*/*/info", "/api/fileShare/*/*/download").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
-                        .requestMatchers("/api/fileShare/**").permitAll()
                         .requestMatchers("/api/test/user").hasRole(Role.USER.getRoleName())
                         .requestMatchers("/api/test/admin").hasRole(Role.ADMIN.getRoleName())
                         .requestMatchers("/api/test").permitAll()

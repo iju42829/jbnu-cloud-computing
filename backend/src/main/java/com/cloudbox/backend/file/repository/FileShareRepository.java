@@ -12,7 +12,7 @@ public interface FileShareRepository extends JpaRepository<FileShare, Long> {
     boolean existsByFileIdAndUuidAndExpirationDateAfter(Long fileId, String uuid, LocalDateTime currentTime);
 
     @EntityGraph(attributePaths = {"file"})
-    List<FileShare> findAllByCreateBy(String createBy);
+    List<FileShare> findAllByCreateByAndExpirationDateAfter(String createBy, LocalDateTime currentTime);
 
     Optional<FileShare> findByIdAndCreateBy(Long fileShareId, String createBy);
 
