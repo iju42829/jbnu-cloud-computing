@@ -1,0 +1,248 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Roboto Condensed", sans-serif;
+  }
+  
+  /* 배경 스타일 */
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+  }
+  
+  /* 메인 컨테이너 스타일 */
+  .login-container {
+    background-color: #ffffff;
+    padding: 2rem;
+    width: 450px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+  }
+  
+  /* 상단 바 스타일 */
+  .login-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to right, #00239C, #8dacff);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+  }
+  
+  /* 로고 스타일 */
+  .logo {
+    width: 60px;
+    margin: 1rem auto;
+  }
+  
+  /* 제목 스타일 */
+  h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333333;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* 부제목 스타일 */
+  p.subtitle {
+    font-size: 0.875rem;
+    color: #777777;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* 입력 필드 스타일 */
+  label {
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #333333;
+    display: block;
+    text-align: left;
+    margin-bottom: 0.3rem;
+  }
+  
+  /* 입력 필드 기본 스타일 */
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+    max-width: 400px;
+    color: #333333;
+    border-radius: 30px;
+    height: 30px;
+    padding-left: 10px;
+    outline: none;
+    border: 2px solid transparent;
+    background-image: linear-gradient(#ffffff, #ffffff),
+      linear-gradient(to right, #ddd, #ddd);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    caret-color: #8dacff;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* 클릭 시 테두리 효과 */
+  input[type="text"]:focus,
+  input[type="password"]:focus {
+    background-image: linear-gradient(#ffffff, #ffffff),
+      linear-gradient(to right, #00239C, #b2c1f8);
+    border: 2px solid transparent;
+  }
+  
+  .forgot-password {
+    font-size: 0.75rem;
+    text-align: right;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    background: linear-gradient(90deg, #00239C 60%, #ED6A66 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-top: 0.25rem;
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+  
+  /* 호버 시 스타일 */
+  .forgot-password:hover {
+    color: #00239C;
+    transform: translateY(-2px);
+  }
+  
+  /* 버튼 공통 스타일 */
+  button {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    --background: #275efe;
+    --text: #fff;
+    --shadow: 0 2px 8px -1px rgba(39, 94, 254, 0.32);
+    --shadow-hover: 0 4px 20px -2px rgba(39, 94, 254, 0.5);
+    --duration: 0.44s;
+    transform: translateY(0);
+    transition: transform var(--duration) ease, box-shadow var(--duration) ease;
+  }
+  
+  .login-btn {
+    background: linear-gradient(90deg, #00239C, #ED6A66);
+    color: #ffffff;
+    border: none;
+    box-shadow: var(--shadow);
+  }
+  
+  /* 로그인 버튼 호버 및 클릭 스타일 */
+  .login-btn:hover {
+    background: linear-gradient(90deg, #0030dd, #ffa9a1);
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-4px);
+  }
+  
+  /* 회원가입 버튼 스타일 */
+  .signup-btn {
+    position: relative;
+    background: transparent;
+    color: #00239C;
+    font-weight: bold;
+    font-size: 0.9rem;
+    padding: 0.5rem;
+    cursor: pointer;
+    border-radius: 20px;
+    width: 100%;
+    border: none;
+  }
+  
+  .signup-btn::before {
+    content: "SIGN UP";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: transparent;
+    background: linear-gradient(90deg, #00239C 2%, #ED6A66 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+  }
+  
+  .signup-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    padding: 2px;
+    background: linear-gradient(90deg, #00239C, #ED6A66);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+  }
+  
+  /* 회원가입 버튼 호버 스타일 */
+  .signup-btn:hover {
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(219, 228, 255, 0.359);
+    transform: translateY(-2px);
+  }
+  
+  /* 소셜 로그인 섹션 구분선 스타일 */
+  .separator {
+    display: flex;
+    align-items: center;
+    margin: 1rem 0;
+    color: #777777;
+    font-size: 0.75rem;
+  }
+  
+  .separator::before,
+  .separator::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #ddd;
+    margin: 0 10px;
+  }
+  
+  /* 소셜 로그인 버튼 스타일 */
+  .social-btn {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: #333333;
+    margin-bottom: 0.5rem;
+  }
+  
+  .social-btn img {
+    width: 16px;
+    height: 16px;
+    margin-right: 0.5rem;
+  }
+  
+  /* 구글 버튼 색상 */
+  .social-btn.google {
+    color: #ED6A66;
+  }
+  
+  /* 네이버 버튼 색상 */
+  .social-btn.naver {
+    color: #03c75a;
+  }
+  

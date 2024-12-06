@@ -1,22 +1,22 @@
-
+/* 기본 스타일 초기화 */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: "Roboto Condensed", sans-serif;
-}
-
-/* 배경 */
-body {
+  }
+  
+  /* 배경 스타일 */
+  body {
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     background-color: #f0f2f5;
-}
-
-/* 메인 컨테이너 */
-.signup-container {
+  }
+  
+  /* 메인 컨테이너 스타일 */
+  .signup-container {
     background-color: #ffffff;
     padding: 2rem;
     width: 450px;
@@ -24,10 +24,10 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
     position: relative;
-}
-
-/* 상단 바 */
-.signup-container::before {
+  }
+  
+  /* 상단 바 스타일 */
+  .signup-container::before {
     content: '';
     position: absolute;
     top: 0;
@@ -37,43 +37,43 @@ body {
     background: linear-gradient(to left, #f3aeac, #ED6A66);
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
-}
-
-/* 로고 */
-.logo {
+  }
+  
+  /* 로고 스타일 */
+  .logo {
     width: 60px;
     margin: 1rem auto;
-}
-
-/* 제목 */
-h2 {
+  }
+  
+  /* 제목 스타일 */
+  h2 {
     font-size: 1.5rem;
     font-weight: bold;
     color: #333333;
     margin-bottom: 0.5rem;
-}
-
-/* 부제목  */
-p.subtitle {
+  }
+  
+  /* 부제목 스타일 */
+  p.subtitle {
     font-size: 0.875rem;
     color: #777777;
     margin-bottom: 1.5rem;
-}
-
-/* 입력 필드  */
-label {
+  }
+  
+  /* 입력 필드 스타일 */
+  label {
     font-size: 0.75rem;
     font-weight: bold;
     color: #333333;
     display: block;
     text-align: left;
     margin-bottom: 0.3rem;
-}
-
-/* 입력 필드  */
-input[type="text"],
-input[type="email"],
-input[type="password"] {
+  }
+  
+  /* 입력 필드 기본 스타일 */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
     width: 100%;
     max-width: 400px;
     color: #333333;
@@ -88,19 +88,19 @@ input[type="password"] {
     background-clip: padding-box, border-box;
     caret-color: #8dacff;
     margin-bottom: 0.5rem;
-}
-
-/* 입력 필드 클릭 효과 */
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus {
+  }
+  
+  /* 입력 필드 클릭 효과 */
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  input[type="password"]:focus {
     background-image: linear-gradient(#ffffff, #ffffff),
                       linear-gradient(to left, #f3aeac, #ED6A66);
     border: 2px solid transparent;
-}
-
-/* 회원가입 버튼*/
-button {
+  }
+  
+  /* 회원가입 버튼 스타일 */
+  button {
     width: 100%;
     padding: 0.5rem;
     border-radius: 20px;
@@ -113,11 +113,11 @@ button {
     border: none;
     box-shadow: 0 2px 8px -1px rgba(39, 94, 254, 0.32);
     transition: transform 0.44s ease, box-shadow 0.44s ease;
-}
-
-/* 회원가입 버튼 호버 효과 */
-button:hover {
+  }
+  
+  /* 회원가입 버튼 호버 효과 */
+  button:hover {
     background: linear-gradient(90deg, #ffa9a1, #0030dd);
     box-shadow: 0 4px 20px -2px rgba(39, 94, 254, 0.5);
     transform: translateY(-4px);
-}
+  }
