@@ -32,8 +32,8 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
-        Member member = memberRepository.findByUsername(authentication.getName()).orElseThrow(MemberNotFoundException::new);
-        Folder folder = folderRepository.findByMemberAndFolderType(member, FolderType.ROOT).orElseThrow(FolderNotFoundException::new);
+        Member member = memberRepository.findByUsername(authentication.getName()).orElseThrow(() -> new MemberNotFoundException("해당 멤버를 찾을 수 없습니다."));
+        Folder folder = folderRepository.findByMemberAndFolderType(member, FolderType.ROOT).orElseThrow(() -> new FolderNotFoundException("루트 폴더를 찾을 수 없습니다."));
 
         Response<AuthenticationSuccessResponse> resultResponse = Response.createResponse(HttpServletResponse.SC_OK,
                 "로그인에 성공했습니다.",

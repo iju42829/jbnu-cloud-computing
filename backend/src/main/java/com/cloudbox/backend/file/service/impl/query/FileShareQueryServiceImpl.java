@@ -48,6 +48,6 @@ public class FileShareQueryServiceImpl implements FileShareQueryService {
     public FileShare getFileShareEntityByIdAndCreateBy(MemberSessionDto memberSessionDto, Long fileShareId) {
         return fileShareRepository
                 .findByIdAndCreateBy(fileShareId, memberSessionDto.getUsername())
-                .orElseThrow(FileShareNotFoundException::new);
+                .orElseThrow(() -> new FileShareNotFoundException("공유 파일이 존재하지 않습니다."));
     }
 }

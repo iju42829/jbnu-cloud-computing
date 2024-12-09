@@ -29,7 +29,7 @@ public class FileQueryServiceImpl implements FileQueryService {
     public String getFilePathById(MemberSessionDto memberSessionDto, Long fileId) {
         File file = fileRepository
                 .findByIdAndCreateBy(fileId, memberSessionDto.getUsername())
-                .orElseThrow(FileNotFoundException::new);
+                .orElseThrow(() -> new FileNotFoundException("파일이 존재하지 않습니다."));
 
         return file.getFilePath();
     }
@@ -38,7 +38,7 @@ public class FileQueryServiceImpl implements FileQueryService {
     public File getFileEntityByIdAndCreateBy(MemberSessionDto memberSessionDto, Long fileId) {
         return fileRepository
                 .findByIdAndCreateBy(fileId, memberSessionDto.getUsername())
-                .orElseThrow(FileNotFoundException::new);
+                .orElseThrow(() -> new FileNotFoundException("파일이 존재하지 않습니다."));
     }
 
     @Override
