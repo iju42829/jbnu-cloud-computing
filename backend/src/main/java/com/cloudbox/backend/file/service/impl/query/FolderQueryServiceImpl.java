@@ -29,7 +29,7 @@ public class FolderQueryServiceImpl implements FolderQueryService {
     public String getFullFolderPathById(Long folderId) {
         Folder folder = folderRepository
                 .findById(folderId)
-                .orElseThrow(FolderNotFoundException::new);
+                .orElseThrow(() -> new FolderNotFoundException("해당 폴더를 찾을 수 없습니다."));
 
         return folder.buildFullFolderPath();
     }
@@ -82,7 +82,7 @@ public class FolderQueryServiceImpl implements FolderQueryService {
         if (resourceType == ResourceType.FOLDER) {
             Folder moveFolder = getFolderEntityByIdAndCreateBy(moveId, memberSessionDto);
             if (moveFolder.getFolderType() == FolderType.ROOT) {
-                throw new RootFolderMoveException();
+                throw new RootFolderMoveException("루트 폴더는 이동할 수 없습니다.");
             }
         }
     }
