@@ -50,7 +50,7 @@ public class FolderQueryServiceImpl implements FolderQueryService {
         Folder folder = folderRepository.findByIdAndCreateBy(folderId, memberSessionDto.getUsername()).orElse(null);
 
         if (folder == null) {
-            folder = folderRepository.findById(folderId).orElseThrow(FolderNotFoundException::new);
+            folder = folderRepository.findById(folderId).orElseThrow(() -> new FolderNotFoundException("해당 폴더를 찾을 수 없습니다."));
 
             if (!folder.getMember().getUsername().equals(memberSessionDto.getUsername())) {
                 throw new FolderNotFoundException("해당 폴더에 접근 권한이 없습니다.");
