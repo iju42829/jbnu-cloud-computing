@@ -13,9 +13,6 @@ function LoginPage() {
   const [options, setOptions] = useState({theme: "dark", notifications: true });
 
   return(
-<<<<<<< Updated upstream
-    <button onClick={()=> navigate("/main", {state: {userInfo, storageInfo, options}})}>확인</button>
-=======
     <div>
       <body>
         <div className="login-container">
@@ -68,7 +65,6 @@ function LoginPage() {
         <script src="login.js"></script>
       </body>
     </div>
->>>>>>> Stashed changes
   )
 }
 export default LoginPage;

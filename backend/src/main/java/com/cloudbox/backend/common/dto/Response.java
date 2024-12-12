@@ -1,5 +1,6 @@
 package com.cloudbox.backend.common.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,9 +11,16 @@ import java.time.LocalDateTime;
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Response <T> {
+    @Schema(description = "응답 시간")
     private LocalDateTime timestamp;
+
+    @Schema(description = "HTTP 상태 코드")
     private int status;
+
+    @Schema(description = "응답 메시지")
     private String message;
+
+    @Schema(description = "응답 데이터")
     private T data;
 
     private Response(int status, String message, T data) {

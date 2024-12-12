@@ -35,3 +35,6 @@ logging:
 
 aws:
   bucket-name: ${BUCKET_NAME}
+
+domain:
+  server-url: ${SERVER_URL}
