@@ -2,6 +2,7 @@ body {
   position: relative;
   min-height: 100vh;
   background-color: #aaaaaa;
+  user-select: none;
 }
 /* 이미지 파일 */
 
@@ -32,6 +33,7 @@ header {
 .userbtn:hover {
   border-radius: 12px;
   background-color: #a1a1a1;
+  cursor: pointer;
 }
 
 /* 헤더 - logo */
@@ -41,6 +43,7 @@ header {
   align-items: center;
   background-color: transparent;
   border: transparent;
+  cursor: pointer;
 }
 .logoimg {
   width: 50px;
@@ -111,6 +114,7 @@ main {
   margin: 1px;
   padding: 5px;
   font-size: 18px;
+  cursor: pointer;
 }
 .side-menu:hover {
   border-radius: 20px;
@@ -139,8 +143,8 @@ main {
 .storage-item:hover {
   border-radius: 20px;
   background-color: #6e6e6ea1;
+  cursor: pointer;
 }
-
 /* 파일 메뉴 */
 .main-container {
   margin-right: 10px;
@@ -212,6 +216,16 @@ main {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.popup-setting{
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: row;
+}
 .popup-input {
   width: 100%;
   padding: 8px;
@@ -262,6 +276,7 @@ main {
 .all-file-container td {
   padding: 10px; /* 셀 내부 여백 */
   border-bottom: 1px solid #a1a1a1; /* 행 구분선 */
+  white-space: nowrap;
 }
 
 .all-file-container th {
@@ -269,6 +284,15 @@ main {
   /*background-color: #f4f4f4; /* 헤더 배경색 */
   border-bottom: 1px solid #a1a1a1; /* 행 구분선 */
   font-weight: bold;
+  white-space: nowrap;
+}
+
+.all-file-container th:hover {
+  cursor: default;
+}
+
+.all-file-container th span.sort-icon:hover {
+  cursor: pointer;
 }
 
 .all-file-container tbody tr:hover {
@@ -305,12 +329,10 @@ main {
 .menu-btn:hover img {
   filter: brightness(0.8); /* 호버 시 약간 어두운 효과 */
 }
-<<<<<<< Updated upstream
-=======
 
 /* 행 선택 시 강조 */
 .selected {
-  background-color: #aab3d8 !important; 
+  background-color: #e0f7fa !important; 
 }
 
 /* 미리보기 오버레이 */
@@ -344,4 +366,45 @@ main {
   display: flex;
   flex-direction: column;
 }
->>>>>>> Stashed changes
+
+.file-menu {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.file-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.file-menu li {
+  padding: 10px 15px;
+  cursor: pointer;
+  color: #333;
+}
+
+.file-menu li:hover {
+  background-color: #0078d4;
+  color: #fff;
+}
+
+.folder-container {
+  margin-left: 20px;
+}
+
+.folder-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.folder-children {
+  margin-left: 20px;
+}
