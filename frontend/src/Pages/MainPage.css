@@ -145,7 +145,6 @@ main {
   background-color: #6e6e6ea1;
   cursor: pointer;
 }
-
 /* 파일 메뉴 */
 .main-container {
   margin-right: 10px;
@@ -366,4 +365,46 @@ main {
 .setting-main {
   display: flex;
   flex-direction: column;
+}
+
+.file-menu {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.file-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.file-menu li {
+  padding: 10px 15px;
+  cursor: pointer;
+  color: #333;
+}
+
+.file-menu li:hover {
+  background-color: #0078d4;
+  color: #fff;
+}
+
+.folder-container {
+  margin-left: 20px;
+}
+
+.folder-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.folder-children {
+  margin-left: 20px;
 }

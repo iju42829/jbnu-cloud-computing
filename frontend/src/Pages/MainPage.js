@@ -56,6 +56,66 @@ function MainPage() {
       }
     });
   }
+  const [fileMenu, setFileMenu] = useState({isOpen: false, position: {}, file: null});
+  //파일 메뉴 드롭다운
+  const handleOpenMenu = (event, file) => {
+    event.preventDefault(); // 기본 컨텍스트 메뉴 방지
+    setFileMenu({
+      isOpen: true,
+      position: { x: event.clientX, y: event.clientY },
+      file: file,
+    });
+  };
+
+  const closeFileMenu = () => {
+    setFileMenu({ isOpen: false, position: {}, file: null });
+  };
+
+  const handleMenuClick = (action) => {
+    const file = fileMenu.file;
+    console.log(`${action} clicked for`, file);
+    closeFileMenu();
+  };
+
+  //사이드 폴더 관리 드롭다운
+  const [openFolders, setOpenFolders] = useState({});
+  // 드롭다운 토글 함수
+  const toggleFolder = (path) => {
+    setOpenFolders((prevState) => ({
+      ...prevState,
+      [path]: !prevState[path],
+    }));
+  };
+  // 드롭다운 트리 렌더링 함수
+  const renderFolderTree = (folderList, currentPath = "/storage") => {
+    return folderList.map((item) => {
+      if (item.type === "folder") {
+        const folderPath = `${currentPath}/${item.name}`;
+        return (
+          <div key={folderPath} className="folder-container">
+            <button
+              className="folder-btn"
+              onClick={() => toggleFolder(folderPath)}
+            >
+              <img
+                src={`image/${openFolders[folderPath] ? "fold" : "spread"}.png`}
+                className="sideimg"
+                alt="folder-toggle"
+              />
+              {item.name}
+            </button>
+            {openFolders[folderPath] && item.children && (
+              <div className="folder-children">
+                {renderFolderTree(item.children, folderPath)}
+              </div>
+            )}
+          </div>
+        );
+      }
+      return null; // 파일은 표시하지 않음
+    });
+  };
+
   //팝업창 관리 --------------------------------------------------------------------
   //새 폴더 팝업
   const [isFolderPopupOpen, setFolderPopupOpen] = useState(false);
@@ -142,6 +202,7 @@ function MainPage() {
     if (!event.target.closest("tr")) { // 클릭한 곳이 파일/폴더가 아닌 경우에만 선택 해제
       setSelectedFiles([]);
     }
+    closeFileMenu();
   };
   const handleClick = (file, event) => {
     if (event.ctrlKey) {// Ctrl 누르고 클릭하면 다중 선택
@@ -163,11 +224,14 @@ function MainPage() {
     }
   };
   const handleGoBack = () => {
-    if(currentPath !== "/storage"){
+    if (currentPath == "/bin"){
+      updatePath("/storage");
+    }
+    else if((currentPath !== "/storage")&&(currentPath !== "/bin")){
       const parentPath = currentPath.split("/").slice(0,-1).join("/") || "/storage";
       updatePath(parentPath);
     }
-  }
+  } 
   //메인 페이지 --------------------------------------------------------------------
   return (
     <body onClick={handleContainerClick}>
@@ -210,14 +274,15 @@ function MainPage() {
                 style={{ display: "none" }}
                 onChange={handleFileUpload}
               />
-            </button>
+            </button>    
             <div className="storage-viewer">
               <button className="storage-item">
                 <img src={`image/spread.png`}  className="sideimg" alt="spread"/>
-                <h >내 저장소</h>                 
+                <h >storage</h>   
               </button>
+              (){renderFolderTree(files)}  
             </div>
-            <button className="side-menu" >
+            <button className="side-menu" onClick={() => updatePath("/bin")}>
               <img src="image/trash.png" className="sideimg" alt="bin"/>휴지통
             </button>
             <button className="side-menu" onClick={openSettingPopup}>
@@ -254,13 +319,14 @@ function MainPage() {
                 {currentPath !== "/storage" && (
                   <tr>
                   <td onDoubleClick={handleGoBack} className="back-btn" colSpan='6'>
-                    /..
+                    {currentPath.split("/").slice(0,-1).join("/") || "내 저장소로 이동"}
                     </td>
                   </tr>
                 )}
                 {sortedFiles.map((file, index) => (
                   <tr key={index} onClick={(e) => handleClick(file, e)}
                   onDoubleClick={() => handleDoubleClick(file)}
+                  onContextMenu={(event) =>handleOpenMenu(event, file)}
                   className={selectedFiles.includes(file) ? "selected" : ""}>
                     <td className="file-icon-column">
                       <img src={`image/${file.type === "folder" ? "folder" : "file"}.png`}
@@ -271,7 +337,7 @@ function MainPage() {
                     <td>{file.type}</td>
                     <td>{file.type === "folder" ? "-" : new Date(file.lastModified).toLocaleString()} </td>
                     <td className="menu-btn-column">
-                      <button className="menu-btn">
+                      <button className="menu-btn" onClick={(event) => handleOpenMenu(event, file)}>
                         <img src="image/menu.png" alt="Menu" />
                       </button>
                     </td>
@@ -335,6 +401,29 @@ function MainPage() {
             </div>
           </div>
         )}
+        {/* 드롭다운 메뉴 */}
+        {(fileMenu.isOpen && currentPath !== "/bin") && (
+                <div className="file-menu" style={{ top: fileMenu.position.y, left: fileMenu.position.x }}>
+                  <ul>
+                    {fileMenu.file.type !== "folder" && (
+                      <li onClick={() => handleMenuClick("download")}>파일 다운로드</li>
+                    )}
+                    <li onClick={() => handleMenuClick("move")}>이동</li>
+                    <li onClick={() => handleMenuClick("copy")}>복사</li>
+                    <li onClick={() => handleMenuClick("delete")}>삭제</li>
+                    <li onClick={() => handleMenuClick("properties")}>속성 보기</li>
+                  </ul>
+                </div>
+              )}
+              {(fileMenu.isOpen && currentPath == "/bin") && (
+                <div className="file-menu" style={{ top: fileMenu.position.y, left: fileMenu.position.x }}>
+                  <ul>
+                    <li onClick={() => handleMenuClick("file-move")}>파일 복원</li>
+                    <li onClick={() => handleMenuClick("P-delete")}>영구 삭제</li>
+                    <li onClick={() => handleMenuClick("properties")}>속성 보기</li>
+                  </ul>
+                </div>
+              )}
         {/* 팝업 부분 끝 */}
     </body>
   );
