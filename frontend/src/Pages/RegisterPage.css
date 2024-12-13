@@ -24,7 +24,7 @@ body {
     text-align: center;
     position: relative;
 }
-
+  
 .register-container::before {
     content: '';
     position: absolute;
