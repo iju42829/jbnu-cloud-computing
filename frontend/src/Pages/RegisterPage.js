@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import './RegisterPage.css';
-
-
+import { useNavigate } from "react-router-dom";
+import axios from 'axios'; // axios 추가
+import './RegisterPage.css'; // CSS 파일을 분리하여 관리
 
 const RegisterPage = () => {
     const navigate = useNavigate();
@@ -14,7 +12,7 @@ const RegisterPage = () => {
         confirmPassword: ''
     });
 
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState(''); // 메시지 상태 추가
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -24,18 +22,22 @@ const RegisterPage = () => {
         }));
     };
 
-    const handleSubmit = async (e) => {  
-        e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // 기본 폼 제출 동작 방지
+        if (formData.password !== formData.confirmPassword) {
+            setMessage('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
         try {
             const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/sign-up`, {
                 username: formData.username,
                 email: formData.email,
-                password: formData.password,
-                confirmPassword: formData.confirmPassword
+                password: formData.password
             });
 
             if (response.status === 201) {
-                setMessage('회원가입이 성공적으로 완료되었습니다! 로그인 페이지로 이동합니다.');
+                setMessage('회원가입 성공! 로그인 페이지로 이동합니다.');
                 setTimeout(() => navigate('/login'), 2000);
             }
         } catch (error) {
@@ -64,7 +66,7 @@ const RegisterPage = () => {
                     required
                 />
 
-                {/* 이메일 입력   */}
+                {/* 이메일 입력 */}
                 <label htmlFor="email">이메일</label>
                 <input
                     type="email"
@@ -107,9 +109,7 @@ const RegisterPage = () => {
             {message && <p className="message">{message}</p>}
 
             {/* 로그인 페이지 이동 버튼 */}
-            <button className="register-login-btn" onClick={() => navigate('/login')}>
-                계정이 있습니다
-            </button>
+            <button className="register-login-btn" onClick={() => navigate("/login")}>계정이 있습니다</button>
         </div>
     );
 };

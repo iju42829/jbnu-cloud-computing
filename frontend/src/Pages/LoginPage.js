@@ -23,16 +23,27 @@ const LoginPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/login`, {
-                username: formData.username,
-                password: formData.password
-            });
+            // 추가: headers와 withCredentials 설정
+            const response = await axios.post(
+                `${process.env.REACT_APP_BACKEND_URL}/api/login`,
+                {
+                    username: formData.username,
+                    password: formData.password
+                },
+                {
+                    headers: {
+                        'Content-Type': 'application/json' // Content-Type 명시
+                    },
+                    withCredentials: true // 쿠키 기반 인증 필요 시 추가
+                }
+            );
 
             if (response.status === 200) {
                 setMessage('로그인 성공! 메인 페이지로 이동합니다.');
-                setTimeout(() => navigate('/main', {
-                    state: { userInfo: response.data.data }
-                }), 2000);
+                setTimeout(() =>
+                    navigate('/main', {
+                        state: { userInfo: response.data.data } // 상태 전달
+                    }), 2000);
             }
         } catch (error) {
             if (error.response?.status === 401) {
@@ -97,7 +108,6 @@ const LoginPage = () => {
                 회원가입하기
             </button>
 
-
             {/* 비밀번호 찾기 */}
             <a
                 href="#"
@@ -107,7 +117,7 @@ const LoginPage = () => {
                 비밀번호를 잊으셨나요?
             </a>
 
-            {/* 구분선   */}
+            {/* 구분선 */}
             <div className="separator">소셜미디어 로그인</div>
 
             {/* 소셜 로그인 버튼 */}
@@ -122,5 +132,5 @@ const LoginPage = () => {
         </div>
     );
 };
-  
+
 export default LoginPage;
