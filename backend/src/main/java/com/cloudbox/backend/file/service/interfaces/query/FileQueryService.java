@@ -15,4 +15,5 @@ public interface FileQueryService {
     FileDownloadResponse downloadSharedFile(Long fileId);
     FileResponse getFileResponsesById(Long fileId);
     File getFileEntityById(Long fileId);
+    List<FileResponse> getFileResponseBySearch(String filename, String createBy);
 }

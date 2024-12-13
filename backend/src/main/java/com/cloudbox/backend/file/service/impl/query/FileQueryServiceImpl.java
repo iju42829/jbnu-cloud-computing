@@ -51,6 +51,13 @@ public class FileQueryServiceImpl implements FileQueryService {
     }
 
     @Override
+    public List<FileResponse> getFileResponseBySearch(String filename, String createBy) {
+        List<File> fileList = fileRepository.findByFileNameContainingAndCreateBy(filename, createBy);
+
+        return fileList.stream().map(FileResponse::fromFile).toList();
+    }
+
+    @Override
     public FileDownloadResponse downloadFile(MemberSessionDto memberSessionDto, Long fileId) {
         File file = getFileEntityByIdAndCreateBy(memberSessionDto ,fileId);
 
