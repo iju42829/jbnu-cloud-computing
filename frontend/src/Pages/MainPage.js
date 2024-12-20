@@ -102,13 +102,34 @@ function MainPage() {
       const response = await fetch(`/api/main?folderId=${folderId}`);
       if (!response.ok) throw new Error("파일 목록 조회 실패");
       const result = await response.json();
-      setFiles(result.data.files);
-      setFolders(result.data.folders);
+  
+      // API 명세에 따라 파일과 폴더를 UI에서 쓰는 형태로 매핑
+      const mappedFolders = result.data.folders.map(folder => ({
+        name: folder.folderName,
+        type: "folder",
+        size: null,
+        lastModified: folder.lastModifiedDate,
+        id: folder.folderId
+      }));
+  
+      const mappedFiles = result.data.files.map(file => ({
+        name: file.fileName,
+        type: "file",
+        size: file.size,
+        lastModified: file.lastModifiedDate,
+        id: file.fileId
+      }));
+  
+      // 폴더+파일을 하나의 리스트로 관리
+      setFiles([...mappedFolders, ...mappedFiles]);
+      // 별도로 folders를 관리하지 않고 모두 files에 통합할 수도 있고,
+      // 필요하다면 setFolders(mappedFolders)로 유지할 수도 있음.
     } catch (error) {
       console.error(error.message);
       alert("파일 목록을 불러오는 중 오류가 발생했습니다.");
     }
   };
+  
 
   
 
