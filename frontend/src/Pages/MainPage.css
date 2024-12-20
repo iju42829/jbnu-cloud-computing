@@ -3,7 +3,7 @@ body {
   min-height: 100vh;
   background-color: #f0f2f5; /* 로그인 페이지와 같은 배경색 */
   user-select: none;
-  font-family: "Roboto Condensed", sans-serif; /* 로그인 페이지와 동일한 폰트 */
+  font-family: 'SUIT-Regular', sans-serif;
   display: flex;
   flex-direction: column;
   
@@ -171,7 +171,7 @@ main {
   padding: 5px;
   background-color: transparent;
   border: transparent;
-  margin: 1px;
+  margin: 10px;
   border-radius: 20px;
   cursor: pointer;
   transition: background-color 0.3s ease;
@@ -353,7 +353,6 @@ main {
   padding: 20px;
   background-color: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .all-file-container table {
