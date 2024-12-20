@@ -68,7 +68,7 @@ label {
     margin-bottom: 0.3rem;
 }
 
-/* 입력 필드 스타일 */
+
 input[type="text"],
 input[type="email"],
 input[type="password"] {
@@ -88,7 +88,7 @@ input[type="password"] {
     margin-bottom: 0.5rem;
 }
 
-/* 입력 필드 포커스 효과 */
+
 input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus {
@@ -106,12 +106,12 @@ button {
     cursor: pointer;
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
-    position: relative; /* 가상 요소를 위한 위치 설정 */
-    overflow: hidden; /* 내부 텍스트 겹침 방지 */
+    position: relative; 
+    overflow: hidden; 
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Continue 버튼 */
+
 .register-continue-btn {
     background: linear-gradient(90deg, #084C7D, #EA8C2A);
     color: #ffffff;
