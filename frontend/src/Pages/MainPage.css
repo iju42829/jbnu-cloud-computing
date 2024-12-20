@@ -326,7 +326,7 @@ main {
   width: 20px;
   height: 20px;
 }
-
+  
 .menu-btn:hover img {
   filter: brightness(0.8); /* 호버 시 약간 어두운 효과 */
 }

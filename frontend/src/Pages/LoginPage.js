@@ -53,7 +53,7 @@ const LoginPage = () => {
             }
         }
     };
-
+   
     const handleSocialLogin = (platform) => {
         alert(`${platform} 현재 구현되지 않은 기능입니다.`);
     };
