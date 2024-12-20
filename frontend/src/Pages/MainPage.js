@@ -22,11 +22,99 @@ function MainPage() {
   const location = useLocation();
   const {userInfo, options} = location.state || {};
   const [currentPath, setCurrentPath] = useState("/storage");
+  const [files, setFiles] = useState([]);
+  const [folders, setFolders] = useState([]);
+
+ 
+  const uploadFile = async (file, folderId) => {
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    try {
+      const response = await fetch(`/api/file?folderId=${folderId}`, {
+        method: "POST",
+        body: formData,
+      });
+      if (!response.ok) throw new Error("파일 업로드 실패");
+      const result = await response.json();
+      alert("파일이 업로드되었습니다.");
+      fetchFiles(folderId); // 파일 목록 갱신
+    } catch (error) {
+      console.error(error.message);
+      alert("파일 업로드 중 오류가 발생했습니다.");
+    }
+  };
+  
+  const downloadFile = async (fileId, fileName) => {
+    try {
+      const response = await fetch(`/api/file/${fileId}`);
+      if (!response.ok) throw new Error("파일 다운로드 실패");
+  
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error(error.message);
+      alert("파일 다운로드 중 오류가 발생했습니다.");
+    }
+  };
+
+  
+  const createFolder = async (name, parentFolderId) => {
+    try {
+      const response = await fetch(`/api/folders/${parentFolderId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      if (!response.ok) throw new Error("폴더 생성 실패");
+      const result = await response.json();
+      alert("폴더가 생성되었습니다.");
+      fetchFiles(parentFolderId); // 파일 목록 갱신
+    } catch (error) {
+      console.error(error.message);
+      alert("폴더 생성 중 오류가 발생했습니다.");
+    }
+  };
+
+  const moveResource = async (resourceId, targetResourceId, resourceType) => {
+    try {
+      const response = await fetch("/api/resources/move", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resourceId, targetResourceId, resourceType }),
+      });
+      if (!response.ok) throw new Error("리소스 이동 실패");
+      alert("리소스가 성공적으로 이동되었습니다.");
+      fetchFiles(currentPath); // 파일 목록 갱신
+    } catch (error) {
+      console.error(error.message);
+      alert("리소스 이동 중 오류가 발생했습니다.");
+    }
+  };
+
+  const fetchFiles = async (folderId = "root") => {
+    try {
+      const response = await fetch(`/api/main?folderId=${folderId}`);
+      if (!response.ok) throw new Error("파일 목록 조회 실패");
+      const result = await response.json();
+      setFiles(result.data.files);
+      setFolders(result.data.folders);
+    } catch (error) {
+      console.error(error.message);
+      alert("파일 목록을 불러오는 중 오류가 발생했습니다.");
+    }
+  };
+
+  
 
   useEffect(() => {
     updatePath("/storage");
   },[]);
-  const [files, setFiles] = useState([]);
 
   const updatePath = async (path) => {
     console.log(`${path}`);
@@ -170,176 +258,194 @@ function MainPage() {
   }
   //메인 페이지 --------------------------------------------------------------------
   return (
-    <body onClick={handleContainerClick}>
-        {/* 헤더 */}
-        <header>
-          <button className="logobtn">
-            <img src="image/logo.png" className="logoimg" alt="logo"/>
-            <h className="logofont">CLOUDBOX</h>
-          </button>        
-          <div className="searchbar">
-            <img src="image/search.png" className="searchimg" alt="search"/>
-            <input className="searchtext" placeholder="검색"></input>
-          </div>
-          <>
-            {isDropdownView && <button className="userbtn" onClick={openSettingPopup}>계정관리</button>}
-            {isDropdownView && <button className="userbtn" onClick={() => navigate('/')}>로그아웃</button>}
-            <button className="userbtn" onClick={viewDropdown}>
-              <img src={userInfo?.profileImage} onError={(e) => {e.target.onerror = null; 
-                e.target.src = "image/user.png"}} className="headerimg" alt="user"/> 
-              <h>{userInfo?.name}</h>
-            </button>
-          </>
-        </header>
-        {/* 메인 부분 시작 */}
-        <main>
-          {/* 사이드 메뉴 시작 */}
-          <div className="side-container">
-            <button className="side-menu" onClick={openFolderPopup}>
-              <img src="image/add-folder.png" className="sideimg" alt="folder"/>새 폴더
-            </button>
-            <button className="side-menu">
-              <img src="image/file-upload.png" className="sideimg" alt="file"/>
-              <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
-                파일 업로드
-              </label>
-              <input
-                id="file-upload"
-                type="file"
-                multiple
-                style={{ display: "none" }}
-                onChange={handleFileUpload}
-              />
-            </button>
-            <div className="storage-viewer">
-              <button className="storage-item">
-                <img src={`image/spread.png`}  className="sideimg" alt="spread"/>
-                <h >내 저장소</h>                 
-              </button>
-            </div>
-            <button className="side-menu" >
-              <img src="image/trash.png" className="sideimg" alt="bin"/>휴지통
-            </button>
-            <button className="side-menu" onClick={openSettingPopup}>
-              <img src="image/setting.png" className="sideimg" alt="setting"/>설정
-            </button>
-          </div>
-          {/* 사이드 메뉴 끝 메인 컨테이너 시작*/}
-          <div className="main-container">
-            {/* 최근 파일 부분 할까 말까
-            <div className="recent-container">최근 파일 </div> */}
-            {/* 파일 부분 시작 */}
-            <div className="all-file-container">
-              {/* 현재 표시되는 파일 경로 */}
-              <h >{currentPath}</h>
-              
-              <table>
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th onClick={() => handleSort("name")}>
-                      파일 이름 {sortKey === "name" && (sortOrder === "asc" ? "▲" : "▼")}
-                    </th>
-                    <th onClick={() => handleSort("size")}>
-                      파일 크기 {sortKey === "size" && (sortOrder === "asc" ? "▲" : "▼")}
-                    </th>
-                    <th>파일 유형</th>
-                    <th onClick={() => handleSort("lastModified")}>
-                      마지막 수정 날짜 {sortKey === "lastModified" && (sortOrder === "asc" ? "▲" : "▼")}
-                    </th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                {currentPath !== "/storage" && (
-                  <tr>
-                  <td onDoubleClick={handleGoBack} className="back-btn" colSpan='6'>
-                    /..
-                    </td>
-                  </tr>
-                )}
-                {sortedFiles.map((file, index) => (
-                  <tr key={index} onClick={(e) => handleClick(file, e)}
-                  onDoubleClick={() => handleDoubleClick(file)}
-                  className={selectedFiles.includes(file) ? "selected" : ""}>
-                    <td className="file-icon-column">
-                      <img src={`image/${file.type === "folder" ? "folder" : "file"}.png`}
-                        alt={file.type} className="file-icon"/>
-                    </td>
-                    <td>{file.name}</td>
-                    <td>{file.type === "folder" ? "-" : `${(file.size / 1024).toFixed(2)} KB`}</td>
-                    <td>{file.type}</td>
-                    <td>{file.type === "folder" ? "-" : new Date(file.lastModified).toLocaleString()} </td>
-                    <td className="menu-btn-column">
-                      <button className="menu-btn">
-                        <img src="image/menu.png" alt="Menu" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-              </table>
-            </div>
-            {/* 파일 부분 끝 */}
-          </div>
-        </main>
-        {/* 메인 부분 끝 팝업 부분 시작*/}
-        {/* 새 폴더 팝업 */}
-        {isFolderPopupOpen && (
-          <div className="popup-overlay">
-            <div className="popup">
-              <h2>새 폴더 만들기</h2>
-              <input
-                type="text"
-                placeholder="폴더 이름을 입력하세요"
-                value={folderName}
-                onChange={(e) => setFolderName(e.target.value)}
-                className="popup-input"
-              />
-              <div className="popup-buttons">
-                <button onClick={handleCreateFolder} className="popup-btn">
-                  확인
+    <div className="container-wrapper">
+
+        <body onClick={handleContainerClick}>
+            {/* 헤더 */}
+            <header>
+              <button className="logobtn">
+                <img src="image/logo.png" className="logoimg" alt="logo"/>
+                <h className="logofont"></h>
+              </button>        
+              <div className="searchbar">
+                <img src="image/search.png" className="searchimg" alt="search"/>
+                <input className="searchtext" placeholder="검색"></input>
+              </div>
+                <>
+                  {isDropdownView && (
+                    <button className="text-btn" onClick={openSettingPopup}>
+                      계정관리
+                    </button>
+                  )}
+                  {isDropdownView && (
+                    <button className="text-btn" onClick={() => navigate('/')}>
+                      로그아웃
+                    </button>
+                  )}
+                  <button className="image-btn" onClick={viewDropdown}>
+                    <img
+                      src={userInfo?.profileImage || "image/user.png"}
+                      onLoad={(e) => console.log("이미지 로드 성공:", e.target.src)}
+                      onError={(e) => {
+                        console.error("이미지 로드 실패:", e.target.src);
+                        e.target.src = "image/user.png"; // 대체 이미지 설정
+                      }}
+                      className="headerimg"
+                      alt="user"
+                    />
+                    <h>{userInfo?.name}</h>
+                  </button>
+                </>
+
+            </header>
+            {/* 메인 부분 시작 */}
+            <main>
+              {/* 사이드 메뉴 시작 */}
+              <div className="side-container">
+                <button className="side-menu" onClick={openFolderPopup}>
+                  <img src="image/add-folder.png" className="sideimg" alt="folder"/>새 폴더
                 </button>
-                <button onClick={closeFolderPopup} className="popup-btn">
-                  취소
+                <button className="side-menu">
+                  <img src="image/file-upload.png" className="sideimg" alt="file"/>
+                  <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
+                    파일 업로드
+                  </label>
+                  <input
+                    id="file-upload"
+                    type="file"
+                    multiple
+                    style={{ display: "none" }}
+                    onChange={handleFileUpload}
+                  />
+                </button>
+                <div className="storage-viewer">
+                  <button className="storage-item">
+                    <img src={`image/spread.png`}  className="sideimg" alt="spread"/>
+                    <h >내 저장소</h>                 
+                  </button>
+                </div>
+                <button className="side-menu" >
+                  <img src="image/trash.png" className="sideimg" alt="bin"/>휴지통
+                </button>
+                <button className="side-menu" onClick={openSettingPopup}>
+                  <img src="image/setting.png" className="sideimg" alt="setting"/>설정
                 </button>
               </div>
-            </div>
-          </div>
-        )}
-        {/* 설정 팝업 */}
-        {isSettingPopupOpen && (
-          <div class="popup-overlay">
-            <div class="popup-setting">
-              <div class="setting-menu">
-                <button> 계정설정</button>
-                <button> 환경설정</button>
+              {/* 사이드 메뉴 끝 메인 컨테이너 시작*/}
+              <div className="main-container">
+                {/* 최근 파일 부분 할까 말까
+                <div className="recent-container">최근 파일 </div> */}
+                {/* 파일 부분 시작 */}
+                <div className="all-file-container">
+                  {/* 현재 표시되는 파일 경로 */}
+                  <h >{currentPath}</h>
+                  
+                  <table>
+                    <thead>
+                      <tr>
+                        <th></th>
+                        <th onClick={() => handleSort("name")}>
+                          파일 이름 {sortKey === "name" && (sortOrder === "asc" ? "▲" : "▼")}
+                        </th>
+                        <th onClick={() => handleSort("size")}>
+                          파일 크기 {sortKey === "size" && (sortOrder === "asc" ? "▲" : "▼")}
+                        </th>
+                        <th>파일 유형</th>
+                        <th onClick={() => handleSort("lastModified")}>
+                          마지막 수정 날짜 {sortKey === "lastModified" && (sortOrder === "asc" ? "▲" : "▼")}
+                        </th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {currentPath !== "/storage" && (
+                      <tr>
+                      <td onDoubleClick={handleGoBack} className="back-btn" colSpan='6'>
+                        /..
+                        </td>
+                      </tr>
+                    )}
+                    {sortedFiles.map((file, index) => (
+                      <tr key={index} onClick={(e) => handleClick(file, e)}
+                      onDoubleClick={() => handleDoubleClick(file)}
+                      className={selectedFiles.includes(file) ? "selected" : ""}>
+                        <td className="file-icon-column">
+                          <img src={`image/${file.type === "folder" ? "folder" : "file"}.png`}
+                            alt={file.type} className="file-icon"/>
+                        </td>
+                        <td>{file.name}</td>
+                        <td>{file.type === "folder" ? "-" : `${(file.size / 1024).toFixed(2)} KB`}</td>
+                        <td>{file.type}</td>
+                        <td>{file.type === "folder" ? "-" : new Date(file.lastModified).toLocaleString()} </td>
+                        <td className="menu-btn-column">
+                          <button className="menu-btn">
+                            <img src="image/menu.png" alt="Menu" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-              <div class="setting-main">
-                <h>설정</h>
-                <h>체크박스 + 설정 내용</h>
-                <button class="popup-btn" onClick={closeSettingPopup}>닫기</button>
+              {/* 파일 부분 끝 */}
+            </div>
+          </main>
+          {/* 메인 부분 끝 팝업 부분 시작*/}
+          {/* 새 폴더 팝업 */}
+          {isFolderPopupOpen && (
+            <div className="popup-overlay">
+              <div className="popup">
+                <h2>새 폴더 만들기</h2>
+                <input
+                  type="text"
+                  placeholder="폴더 이름을 입력하세요"
+                  value={folderName}
+                  onChange={(e) => setFolderName(e.target.value)}
+                  className="popup-input"
+                />
+                <div className="popup-buttons">
+                  <button onClick={handleCreateFolder} className="popup-btn">
+                    확인
+                  </button>
+                  <button onClick={closeFolderPopup} className="popup-btn">
+                    취소
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        {/* 미리보기 창 */}
-        {previewFile && (
-          <div className="preview-overlay" onClick={() => setPreviewFile(null)}>
-            <div className="preview-container">
-              <h2>미리보기: {previewFile.name}</h2>
-              <p>파일 유형: {previewFile.type}</p>
-              <p>파일 크기: {(previewFile.size / 1024).toFixed(2)} KB</p>
-              <p>마지막 수정: {new Date(previewFile.lastModified).toLocaleString()}</p>
-              <button onClick={() => setPreviewFile(null)}>닫기</button>
+          )}
+          {/* 설정 팝업 */}
+          {isSettingPopupOpen && (
+            <div class="popup-overlay">
+              <div class="popup-setting">
+                <div class="setting-menu">
+                  <button> 계정설정</button>
+                  <button> 환경설정</button>
+                </div>
+                <div class="setting-main">
+                  <h>설정</h>
+                  <h>체크박스 + 설정 내용</h>
+                  <button class="popup-btn" onClick={closeSettingPopup}>닫기</button>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
-        {/* 팝업 부분 끝 */}
-    </body>
+          )}
+          {/* 미리보기 창 */}
+          {previewFile && (
+            <div className="preview-overlay" onClick={() => setPreviewFile(null)}>
+              <div className="preview-container">
+                <h2>미리보기: {previewFile.name}</h2>
+                <p>파일 유형: {previewFile.type}</p>
+                <p>파일 크기: {(previewFile.size / 1024).toFixed(2)} KB</p>
+                <p>마지막 수정: {new Date(previewFile.lastModified).toLocaleString()}</p>
+                <button onClick={() => setPreviewFile(null)}>닫기</button>
+              </div>
+            </div>
+          )}
+          {/* 팝업 부분 끝 */}
+      </body>
+    </div>
   );
 }
 
 export default MainPage;
-
-   

@@ -1,191 +1,267 @@
 body {
   position: relative;
   min-height: 100vh;
-  background-color: #aaaaaa;
+  background-color: #f0f2f5; /* 로그인 페이지와 같은 배경색 */
   user-select: none;
+  font-family: "Roboto Condensed", sans-serif; /* 로그인 페이지와 동일한 폰트 */
+  display: flex;
+  flex-direction: column;
+  
 }
-/* 이미지 파일 */
+
+.container-wrapper {
+  position: relative;
+  margin: 0 auto;
+  padding: 0 20px; /* 좌우 20px 간격 */
+  border-left: 2px solid #ffffff00; /* 왼쪽 선 */
+  border-right: 2px solid #ffffff00; /* 오른쪽 선 */
+  animation: glowing-border 1.5s infinite;
+}
+
+
+
+.container-wrapper::before {
+  left: -20px; /* 왼쪽 선의 위치 */
+}
+
+.container-wrapper::after {
+  right: -20px; /* 오른쪽 선의 위치 */
+}
+
 
 .recentimg {
-  width: 70px;  height: 70px;
+  width: 70px;
+  height: 70px;
 }
 
-/* 헤더 */
 header {
-  position: relative;
-  font-size: 30px;
+  position: relative; /* 필요에 따라 fixed나 absolute로 변경 가능 */
+  width: 100%; /* 화면 너비를 100%로 설정 */
+  height: auto; /* 내용에 따라 높이를 조정 */
+  font-size: 1.5rem;
   display: flex;
   flex-direction: row;
   align-items: center;
-}
-.headerimg {
-  min-width: 30px;  min-height: 30px;
-  width: 30px; height: 30px;
-}
-.userbtn {
-  padding: 10px;
-  display: flex;
-  flex-direction:column;
-  background-color: transparent;
-  border: transparent;
-  align-items: center;
-}
-.userbtn:hover {
-  border-radius: 12px;
-  background-color: #a1a1a1;
-  cursor: pointer;
+  background-color: #ffffff; /* 배경색 */
+  padding: 0.5rem; /* 내부 여백 */
+  box-shadow: 0 6px 4px #ffd7ab; /* 박스 하단에만 그림자 */
+  margin-top: 10px; /* 외부 여백 제거 */
+  margin-bottom: 10px;
+  border-radius: 10px 10px 0 0; /* 좌측 상단과 우측 상단만 둥글게 설정 */
+
 }
 
-/* 헤더 - logo */
-.logobtn {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+/* 텍스트 버튼 스타일 */
+.text-btn {
+  padding: 10px 10px;
+  max-width: 90px;
   background-color: transparent;
-  border: transparent;
+  border: 1px solid #ddd;
+  border-radius: 4px; /* 사각형 스타일 */
   cursor: pointer;
+  font-size: 13px;
+  margin-right: 10px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
-.logoimg {
+
+.text-btn:hover {
+  background-color: #084C7D;
+  color: #fff;
+}
+
+/* 이미지 버튼 스타일 */
+.image-btn {
   width: 50px;
   height: 50px;
-  margin: 5px;
-}
-.logofont {
-  width: 140px;
-  font-size: 25px;
-  margin-right: 5px;
+  background-color: transparent;
+  border: none;
+  border-radius: 50%; /* 원형 스타일 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-/* 헤더 - search */
+.image-btn:hover {
+  background-color: #eaeaea;
+}
+
+/* 유저 이미지 스타일 */
+.headerimg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%; /* 이미지도 원형으로 유지 */
+  object-fit: cover; /* 이미지를 버튼 크기에 맞게 조정 */
+}
+
+
+
+.logobtn {
+  display: flex;
+  max-width: 210px;
+  flex-direction: row;
+  align-items: center;
+  background-color: transparent;
+  border: transparent;
+  cursor: pointer;
+}
+
+.logoimg {
+  width: 150px;
+  height: 50px;
+  margin: 5px;
+  margin-left: 20px;
+}
+
+
+
 .searchbar {
   display: flex;
   flex-direction: row;
-  width:fit-content;
-  margin-right: auto;
-  background-color: transparent;
+  width: 380px;
+  margin-left: 20px;
+  margin-right: 30px;
+  padding: 0.5rem;
+  background-color: #ffffff;
   border-radius: 20px;
-  border: 1px solid #000;
-  box-shadow: inset 0 4px 12px #a1a1a1;
+  box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.2);
 }
+
 .searchtext {
-  font-size: 16px;
+  font-size: 1rem;
   align-self: center;
   background-color: transparent;
-  border: transparent;
-  margin-right: 10px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-.searchtext:focus{
+  border: none;
   outline: none;
+  padding: 0 0.5rem;
 }
+
 .searchimg {
-  width: 18px;  height: 18px;
+  width: 18px;
+  height: 18px;
   margin: 5px;
 }
 
-
-
-/* 메인 */
 main {
   display: flex;
   flex-direction: row;
   min-height: 100vh;
-  margin-top: -65px;
+  margin-top: -70px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
 }
 
-
-/* 사이드 메뉴 */
 .side-container {
-  margin-top: 75px;
+  margin-top: 60px;
   display: flex;
   flex-direction: column;
-  min-width: 220px;
+  max-width: 200px;
   min-height: 100%;
+  background-color: #ffffff;
+  padding: 1rem;
+  border-right: 2px solid #00000010;
 }
+
 .side-menu {
-  width: 220px;
   display: flex;
   flex-direction: row;
-  border: transparent;
   align-items: center;
   text-align: left;
-  background-color: transparent;
-  margin: 1px;
   padding: 5px;
-  font-size: 18px;
-  cursor: pointer;
-}
-.side-menu:hover {
+  background-color: transparent;
+  border: transparent;
+  margin: 1px;
   border-radius: 20px;
-  background-color: #6e6e6ea1;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
+
+.side-menu:hover {
+  background-color: #084c7d3a;
+}
+
 .sideimg {
-  width: 18px;  height: 18px;
-  margin: 5px;  margin-right: 10px;
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
 }
+
 .storage-viewer {
   width: 220px;
   margin-bottom: auto;
 }
+
 .storage-item {
-  width: 220px;
   display: flex;
   flex-direction: row;
-  border: transparent;
   align-items: center;
   text-align: left;
-  background-color: transparent;
-  margin: 1px;
+  width: 175px;
   padding: 5px;
+  margin: 1px;
   font-size: 18px;
-}
-.storage-item:hover {
+  border: transparent;
+  background-color: transparent;
   border-radius: 20px;
-  background-color: #6e6e6ea1;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-/* 파일 메뉴 */
-.main-container {
-  margin-right: 10px;
-  margin-bottom: 10px;
-  margin-top: 65px;
-  border-radius: 12px;
-  width: 100%;
-  background-color: #dfdfdf;
+.storage-item:hover {
+  background-color: #084c7d3a;
 }
-/* 최근 파일 메뉴 */
-.recent-container{
+.side-menu:hover, .storage-item:hover {
+  background-color: #084c7d3a;
+  transform: scale(1.01); /* 살짝 확대 */
+  transition: background-color 0.5s ease, transform 0.5s ease;
+}
+
+
+
+.main-container {
+  flex-grow: 1;
+  margin: 65px 0px 10px 0px;
+  border-left: 1px solid #ffffff;;
+  padding: 1rem;
+  background-color: #ffffff;
+}
+
+.recent-container {
   margin: 10px;
   padding: 10px;
   max-height: 400px;
   border-radius: 12px;
-  background-color: #a1a1a1;
+  background-color: #eaeaea;
 }
-/* 모든 파일 메뉴 */
-.all-file-container{
+
+.all-file-container {
   margin: 10px;
   padding: 10px;
   border-radius: 12px;
-  /* background-color: #a1a1a1; */
+  background-color: #ffffff;
 }
+
 .layout-container {
   display: flex;
   flex-direction: row;
-  margin-left: 10px;
-  margin-right: 10px;
+  margin: 0 10px;
 }
+
 .layoutbtn {
+  flex-grow: 1;
   text-align: left;
   font-size: 15px;
   background-color: transparent;
   border: transparent;
-  flex-grow: 1;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
+
 .layoutbtn:hover {
-  background-color: #6e6e6ea1;
+  background-color: #eaeaea;
 }
+
 /* .file-container{
   background-color: antiquewhite;
   display: flex;
@@ -193,8 +269,6 @@ main {
   margin-left: 10px;
   margin-right: 10px;
 } */
-
-
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -209,85 +283,112 @@ main {
 }
 
 .popup {
-  background: white;
+  background: #ffffff;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 12px;
   width: 300px;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.popup-setting{
-  background: white;
+.popup-setting {
+  background: #ffffff;
   padding: 20px;
-  border-radius: 8px;
-  width: 300px;
+  border-radius: 12px;
+  width: 400px;
   text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: row;
 }
+
 .popup-input {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   margin-top: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
 }
 
 .popup-buttons {
   margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .popup-btn {
-  padding: 10px 15px;
+  padding: 10px 20px;
   margin: 5px;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
+  font-size: 1rem;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .popup-btn:first-child {
-  background-color: #007bff;
-  color: white;
+  background-color: #084C7D;
+  color: #ffffff;
+}
+
+.popup-btn:first-child:hover {
+  background-color: #062f4d;
 }
 
 .popup-btn:last-child {
-  background-color: #dc3545;
-  color: white;
+  background-color: #EA8C2A;
+  color: #ffffff;
 }
 
+.popup-btn:last-child:hover {
+  background-color: #c47623;
+}
 
 .all-file-container {
   display: flex;
   flex-direction: column;
-  align-items: left; /* 왼쪽 정렬 */
-  justify-content: center; /* 세로 정렬 (필요시) */
-  /*padding: 20px; /* 전체적인 여백 */
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .all-file-container table {
-  border-collapse: separate; /* 셀 간격 설정 가능 */
-  border-spacing: 0px 0px; /* 셀 간 간격 */
-  width: 100%; /* 테이블 넓이 설정 */
-  text-align: left; /* 텍스트 왼쪽 정렬 */
-  margin: auto; /* 테이블 수평 중앙 정렬 및 상하 여백 */
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  background-color: #ffffff;
 }
 
-.all-file-container td {
-  padding: 10px; /* 셀 내부 여백 */
-  border-bottom: 1px solid #a1a1a1; /* 행 구분선 */
-  white-space: nowrap;
+.all-file-container th, .all-file-container td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
 .all-file-container th {
-  padding: 10px; /* 셀 내부 여백 */
-  /*background-color: #f4f4f4; /* 헤더 배경색 */
-  border-bottom: 1px solid #a1a1a1; /* 행 구분선 */
   font-weight: bold;
-  white-space: nowrap;
+  font-size: 1rem;
+  color: #333333;
 }
 
+.all-file-container td {
+  font-size: 0.9rem;
+  color: #555555;
+}
+
+.all-file-container tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.all-file-container .file-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
 .all-file-container th:hover {
   cursor: default;
 }
@@ -297,46 +398,50 @@ main {
 }
 
 .all-file-container tbody tr:hover {
-  background-color: #f9f9f9; /* 행 호버 효과 */
+  background-color: #f0f2f5; /* 로그인 페이지와 비슷한 행 호버 효과 */
 }
 
 .all-file-container .file-icon-column {
-  width: 18px; /* 최소 너비 설정 */
+  width: 24px; /* 더 넉넉한 너비 */
   text-align: center; /* 중앙 정렬 */
 }
 
 .all-file-container .menu-btn-column {
-  width: 18px; /* 최소 너비 설정 */
+  width: 24px; /* 더 넉넉한 너비 */
   text-align: center; /* 중앙 정렬 */
 }
 
 .file-icon {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   margin-right: 8px; /* 텍스트와 간격 */
+  border-radius: 4px; /* 둥근 모서리 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 가벼운 그림자 */
 }
 
 .menu-btn {
   background: none;
   border: none;
   cursor: pointer;
+  padding: 5px;
+  transition: transform 0.2s ease, filter 0.2s ease; /* 부드러운 애니메이션 */
 }
 
 .menu-btn img {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
 }
-  
+
 .menu-btn:hover img {
-  filter: brightness(0.8); /* 호버 시 약간 어두운 효과 */
+  filter: brightness(0.9); /* 호버 시 약간 어두운 효과 */
+  transform: scale(1.1); /* 약간 확대 효과 */
 }
 
-/* 행 선택 시 강조 */
 .selected {
-  background-color: #e0f7fa !important; 
+  background-color: #e8f5ff !important; /* 선택된 행의 강조 */
+  border-left: 4px solid #007bff; /* 선택된 행의 강조 */
 }
 
-/* 미리보기 오버레이 */
 .preview-overlay {
   position: fixed;
   top: 0;
@@ -350,20 +455,76 @@ main {
   z-index: 1000;
 }
 
-/* 미리보기 컨테이너 */
 .preview-container {
-  background: white;
+  background: #ffffff;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 12px;
   width: 400px;
   text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .setting-menu {
   display: flex;
   flex-direction: column;
+  padding: 10px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
+
 .setting-main {
   display: flex;
   flex-direction: column;
+  padding: 10px;
+}
+
+.file-menu {
+  position: absolute;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.file-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.file-menu li {
+  padding: 10px 15px;
+  cursor: pointer;
+  color: #333333;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.file-menu li:hover {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.folder-container {
+  margin-left: 20px;
+}
+
+.folder-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s ease;
+}
+
+.folder-btn:hover {
+  background-color: #f0f2f5;
+  border-radius: 8px;
+}
+
+.folder-children {
+  margin-left: 20px;
 }
