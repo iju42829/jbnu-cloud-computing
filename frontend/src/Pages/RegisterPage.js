@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import axios from 'axios'; // axios 추가
-import './RegisterPage.css'; // CSS 파일을 분리하여 관리
+import axios from 'axios'; 
+import './RegisterPage.css'; 
 
 const RegisterPage = () => {
     const navigate = useNavigate();
@@ -11,8 +11,7 @@ const RegisterPage = () => {
         password: '',
         confirmPassword: ''
     });
-
-    const [message, setMessage] = useState(''); // 메시지 상태 추가
+    const [message, setMessage] = useState('');
 
     const handleChange = (e) => {
         const { id, value } = e.target;
@@ -23,39 +22,57 @@ const RegisterPage = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); // 기본 폼 제출 동작 방지
+        e.preventDefault();
+
+        // (1) 클라이언트 단에서도 확인
         if (formData.password !== formData.confirmPassword) {
             setMessage('비밀번호가 일치하지 않습니다.');
             return;
         }
 
         try {
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/sign-up`, {
-                username: formData.username,
-                email: formData.email,
-                password: formData.password
-            });
+            // (2) 서버에 confirmPassword도 함께 전송
+            //     POST /api/sign-up
+            //     Body: { username, password, confirmPassword, email }
+            const response = await axios.post(
+                `${process.env.REACT_APP_BACKEND_URL}/api/sign-up`,
+                {
+                    username: formData.username,
+                    password: formData.password,
+                    confirmPassword: formData.confirmPassword,
+                    email: formData.email
+                }
+            );
 
+            // (3) 성공 시 서버에서 201 응답
             if (response.status === 201) {
+                // 성공 메시지 표시 후 로그인 페이지 이동
                 setMessage('회원가입 성공! 로그인 페이지로 이동합니다.');
                 setTimeout(() => navigate('/login'), 2000);
             }
         } catch (error) {
-            setMessage(error.response?.data?.message || '회원가입에 실패했습니다. 다시 시도해주세요.');
+            // (4) 서버에서 400 응답인 경우 등
+            //     error.response?.status === 400 일 수도 있음
+            if (error.response?.status === 400) {
+                // 서버에서 잘못된 회원가입 요청 메시지
+                setMessage(error.response.data?.message || '잘못된 요청입니다.');
+            } else {
+                // 기타 에러 처리
+                setMessage(
+                    error.response?.data?.message ||
+                    '회원가입에 실패했습니다. 다시 시도해주세요.'
+                );
+            }
         }
     };
 
     return (
         <div className="register-container">
-            {/* 로고 */}
             <img src="image/logo.png" alt="Logo" className="logo" />
-
-            {/* 제목 */}
             <h2>회원 가입 하기</h2>
             <p className="subtitle">클라우드 박스 회원가입 페이지</p>
 
             <form onSubmit={handleSubmit}>
-                {/* ID 입력 */}
                 <label htmlFor="username">아이디</label>
                 <input
                     type="text"
@@ -66,7 +83,6 @@ const RegisterPage = () => {
                     required
                 />
 
-                {/* 이메일 입력 */}
                 <label htmlFor="email">이메일</label>
                 <input
                     type="email"
@@ -77,7 +93,6 @@ const RegisterPage = () => {
                     required
                 />
 
-                {/* 비밀번호 입력 */}
                 <label htmlFor="password">비밀번호</label>
                 <input
                     type="password"
@@ -88,7 +103,6 @@ const RegisterPage = () => {
                     required
                 />
 
-                {/* 비밀번호 확인 입력 */}
                 <label htmlFor="confirmPassword">비밀번호 확인</label>
                 <input
                     type="password"
@@ -99,20 +113,18 @@ const RegisterPage = () => {
                     required
                 />
 
-                {/* 회원가입 버튼 */}
                 <button className="register-continue-btn" type="submit">
                     계정 생성하기
                 </button>
             </form>
 
-            {/* 메시지 출력 */}
             {message && <p className="message">{message}</p>}
 
-            {/* 로그인 페이지 이동 버튼 */}
-            <button className="register-login-btn" onClick={() => navigate("/login")}>계정이 있습니다</button>
+            <button className="register-login-btn" onClick={() => navigate("/login")}>
+                계정이 있습니다
+            </button>
         </div>
     );
 };
 
 export default RegisterPage;
-   
