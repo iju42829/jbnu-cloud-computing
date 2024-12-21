@@ -20,6 +20,8 @@ function MainPage() {
   //페이지 이동, 이전 페이지의 데이터 가져오기
   const navigate = useNavigate();  
   const location = useLocation();
+  const [folderHistory, setFolderHistory] = useState([0]); // 처음 폴더: 0 (루트)
+
   const {userInfo, options} = location.state || {};
   const currentFolderId = folderHistory[folderHistory.length - 1];
   const [files, setFiles] = useState([]);
@@ -28,7 +30,6 @@ function MainPage() {
   const [isMovePopupOpen, setMovePopupOpen] = useState(false);
   const [targetFolderId, setTargetFolderId] = useState("");
   const [selectedResource, setSelectedResource] = useState(null); // 이동할 리소스
-  const [folderHistory, setFolderHistory] = useState([0]); // 처음 폴더: 0 (루트)
 
 
 
@@ -316,16 +317,7 @@ const handleMoveResource = async () => {
   }
 };
 
-  const updatePath = async (path) => {
-    console.log(`${path}`);
-    const response = await fetch(`${path}.json`);
-    if(!response.ok) {
-       throw new Error('http error');
-      }
-      const data = await response.json();
-      setFiles(data);
-      setcurrentFolderId(path);
-    }
+
 
   //드롭다운 관리 ------------------------------------------------------------------
   //유저 드롭다운
