@@ -4,6 +4,7 @@ import com.cloudbox.backend.common.argumentResolver.annotation.Login;
 import com.cloudbox.backend.common.dto.MemberSessionDto;
 import com.cloudbox.backend.common.dto.Response;
 import com.cloudbox.backend.file.dto.response.FileDownloadResponse;
+import com.cloudbox.backend.file.dto.response.FileResponse;
 import com.cloudbox.backend.file.service.interfaces.command.FileCommandService;
 import com.cloudbox.backend.file.service.interfaces.query.FileQueryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,6 +21,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 @RestController
@@ -43,6 +46,18 @@ public class FileController {
         fileCommandService.createFile(memberSessionDto, uploadFile, folderId);
 
         return new ResponseEntity<>(Response.createResponseWithoutData(HttpServletResponse.SC_CREATED, "파일 업로드에 성공하였습니다."), HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "파일 검색", description = "지정된 검색어를 통해 파일을 검색 합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "파일 검색 성공")
+    })
+    @GetMapping("/file/search")
+    public ResponseEntity<Response<List<FileResponse>>> searchFile(@Login MemberSessionDto memberSessionDto, @RequestParam String filename) {
+        List<FileResponse> fileResponses = fileQueryService.getFileResponseBySearch(filename, memberSessionDto.getUsername());
+
+        return new ResponseEntity<>(Response.createResponse(HttpServletResponse.SC_OK, "파일 검색에 성공했습니다.", fileResponses),
+                HttpStatus.OK);
     }
 
     @Operation(summary = "파일 다운로드", description = "지정된 파일을 다운로드 합니다.")

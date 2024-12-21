@@ -31,6 +31,9 @@ public class File extends BaseEntity {
 
     private Long size;
 
+    @OneToOne(mappedBy = "file", cascade = CascadeType.ALL, orphanRemoval = true)
+    private FileShare fileShare;
+
     private File(Member member, String fileName, String filePath, Folder folder, Long size) {
         this.member = member;
         this.fileName = fileName;

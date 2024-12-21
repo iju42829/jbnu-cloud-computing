@@ -1,0 +1,13 @@
+[
+  {
+    "name": "Documents",
+    "type": "folder",
+    "children": []
+  },
+  {
+    "name": "example3.pdf",
+    "size": 3072,
+    "type": "application/pdf",
+    "lastModified": "2024-11-15T09:45:00Z"
+  }
+]
