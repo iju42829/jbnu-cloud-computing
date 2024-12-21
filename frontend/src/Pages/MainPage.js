@@ -21,7 +21,7 @@ function MainPage() {
   const navigate = useNavigate();  
   const location = useLocation();
   const {userInfo, options} = location.state || {};
-  const [currentFolderId, setcurrentFolderId] = useState(0); // 루트 폴더를 0이라 가정
+  const [currentFolderId, setCurrentFolderId] = useState(0);
   const [files, setFiles] = useState([]);
   const [folders, setFolders] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -29,7 +29,7 @@ function MainPage() {
   const [targetFolderId, setTargetFolderId] = useState("");
   const [selectedResource, setSelectedResource] = useState(null); // 이동할 리소스
 
-  
+
 
   const handleSearch = (e) => {
     const query = e.target.value;
@@ -155,31 +155,42 @@ const downloadFile = async (fileId, fileName) => {
 
   const fetchFiles = async (folderId = 0) => {
     try {
+      // (수정됨) 로컬 JSON 대신 서버 API 호출
       const response = await fetch(`/api/main?folderId=${folderId}`);
       if (!response.ok) throw new Error("파일 목록 조회 실패");
       const result = await response.json();
-  
-      // API 명세에 따라 파일과 폴더를 UI에서 쓰는 형태로 매핑
-      const mappedFolders = result.data.folders.map(folder => ({
+
+      // API 응답 구조: result.data.folders, result.data.files
+      // parentFolderId는 API가 별도로 준다고 가정
+      const foldersData = result.data.folders || [];
+      const filesData = result.data.files || [];
+      
+      // 폴더 목록 매핑
+      const mappedFolders = foldersData.map(folder => ({
         name: folder.folderName,
         type: "folder",
         size: null,
         lastModified: folder.lastModifiedDate,
         id: folder.folderId
       }));
-  
-      const mappedFiles = result.data.files.map(file => ({
+
+      // 파일 목록 매핑
+      const mappedFiles = filesData.map(file => ({
         name: file.fileName,
         type: "file",
         size: file.size,
         lastModified: file.lastModifiedDate,
         id: file.fileId
       }));
-  
-      // 폴더+파일을 하나의 리스트로 관리
-      setFiles([...mappedFolders, ...mappedFiles]);
-      // 별도로 folders를 관리하지 않고 모두 files에 통합할 수도 있고,
-      // 필요하다면 setFolders(mappedFolders)로 유지할 수도 있음.
+
+      // (수정됨) 폴더 & 파일 state 업데이트
+      setFolders(mappedFolders);
+      setFiles(mappedFiles);
+
+      // (수정됨) 현재 폴더 & parentFolderId 갱신 (API가 준다고 가정)
+      setCurrentFolderId(folderId);
+      setParentFolderId(result.data.parentFolderId ?? null);
+
     } catch (error) {
       console.error(error.message);
       alert("파일 목록을 불러오는 중 오류가 발생했습니다.");
@@ -427,21 +438,24 @@ const handleCreateFolder = async () => {
       setSelectedFiles([file]);// 단일 선택
     }
   };
-  const handleDoubleClick = (item) => { // 더블 클릭 이벤트
+  const handleDoubleClick = (item) => {
     if (item.type === "folder") {
-      updatePath(`${currentFolderId}/${item.name}`);
+      // (수정됨) 폴더를 열 때, folderId 기반으로 fetchFiles
+      fetchFiles(item.id);
     } else {
-      // 파일인 경우 미리보기 표시
+      // 파일 미리보기
       setPreviewFile(item);
     }
   };
   const handleGoBack = () => {
-    if(currentFolderId !== "/storage"){
-      const parentPath = currentFolderId.split("/").slice(0,-1).join("/") || "/storage";
-      updatePath(parentPath);
+    // (수정됨) API가 parentFolderId를 준다면 그걸로 fetchFiles
+    if (parentFolderId !== null) {
+      fetchFiles(parentFolderId);
+    } else {
+      alert("상위 폴더가 없습니다.");
     }
-  }
-  //메인 페이지 --------------------------------------------------------------------
+  };
+  //메인 페이지 --------------------------------------------------
   return (
     <div className="container-wrapper">
 
