@@ -39,12 +39,22 @@ const LoginPage = () => {
             );
 
             if (response.status === 200) {
+                const { username, rootFolderId } = response.data.data;
                 setMessage('로그인 성공! 메인 페이지로 이동합니다.');
-                setTimeout(() =>
-                    navigate('/main', {
-                        state: { userInfo: response.data.data } // 상태 전달
-                    }), 2000);
-            }
+                
+                setTimeout(() => {
+                  navigate('/main', {
+                    state: {
+                      userInfo: {
+                        username,        // "사용자아이디"
+                        rootFolderId     // 123
+                        // ...필요하면 다른 정보도
+                      }
+                    }
+                  });
+                }, 2000);
+              }
+              
         } catch (error) {
             if (error.response?.status === 401) {
                 setMessage('인증 실패: 잘못된 사용자 이름 또는 비밀번호입니다.');
