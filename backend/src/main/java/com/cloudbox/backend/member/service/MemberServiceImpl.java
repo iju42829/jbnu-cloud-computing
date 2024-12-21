@@ -35,13 +35,13 @@ public class MemberServiceImpl implements MemberService {
     public Member getMemberEntityByUsername(String username) {
         return memberRepository
                 .findByUsername(username)
-                .orElseThrow(MemberNotFoundException::new);
+                .orElseThrow(() -> new MemberNotFoundException("해당 멤버를 찾을 수 없습니다."));
     }
 
     @Override
     public Member getMemberEntityById(Long memberId) {
         return memberRepository
                 .findById(memberId)
-                .orElseThrow(MemberNotFoundException::new);
+                .orElseThrow(() -> new MemberNotFoundException("해당 멤버를 찾을 수 없습니다."));
     }
 }

@@ -46,9 +46,9 @@ const LoginPage = () => {
                   navigate('/main', {
                     state: {
                       userInfo: {
-                        username,        // "사용자아이디"
-                        rootFolderId     // 123
-                        // ...필요하면 다른 정보도
+                        username,       
+                        rootFolderId     
+                        
                       }
                     }
                   });
