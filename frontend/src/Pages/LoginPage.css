@@ -1,9 +1,9 @@
-/* 기본 스타일 초기화 */
+
 
 .roboto-condensed-body {
     font-family: "Roboto Condensed", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 400; /* 기본 굵기 */
+    font-weight: 400; 
     font-style: normal;
 }
 
@@ -14,7 +14,7 @@
     box-sizing: border-box;
     font-family: "Roboto Condensed", sans-serif;
 }
-
+     
 
 /* 배경 스타일 */
 body{
@@ -34,6 +34,7 @@ body{
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     text-align: center;
     position: relative;
+    overflow: visible;
 }
 
 /* 상단 바 스타일 */
@@ -44,16 +45,19 @@ body{
     left: 0;
     width: 100%;
     height: 8px;
-    background: linear-gradient(to right, #00239C, #8dacff);
+    background: linear-gradient(to right, #084C7D, rgb(174, 196, 255));
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
 }
 
-/* 로고 스타일 */
 .logo {
-    width: 60px;
-    margin: 1rem auto;
+    transform: scale(1.5); /* 로고 크기 확대 */
+    transform-origin: center; /* 중심 기준으로 확대 */
+    display: block;
+    margin: 0 auto;
 }
+
+
 
 /* 제목 스타일 */
 h2 {
@@ -103,7 +107,7 @@ input[type="password"] {
 input[type="text"]:focus,
 input[type="password"]:focus {
   background-image: linear-gradient(#ffffff, #ffffff),
-    linear-gradient(to right, #00239C, #b2c1f8);
+    linear-gradient(to right, #084C7D, #2d5a7a);
   border: 2px solid transparent;
 }
 
@@ -114,7 +118,7 @@ input[type="password"]:focus {
     display: block;
     margin-bottom: 1rem;
     font-weight: bold;
-    background: linear-gradient(90deg, #00239C 60%, #ED6A66 100%);
+    background: linear-gradient(90deg, #084C7D 60%, #EA8C2A 100%);
     background-clip: text; 
     -webkit-background-clip: text; 
     color: transparent; 
@@ -124,7 +128,7 @@ input[type="password"]:focus {
 
 /* 호버 시 스타일 */
 .forgot-password:hover {
-    color: #00239C; /* 텍스트 색상 변경 */
+    color: #072b44; /* 텍스트 색상 변경 */
     transform: translateY(-2px); /* 위로 이동 효과 */
 }
 
@@ -139,48 +143,52 @@ button {
     cursor: pointer;
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
-
-    --background: #275efe; /* 기본 배경 색상 */
-    --text: #fff; /* 기본 텍스트 색상 */
-    --shadow: 0 2px 8px -1px rgba(39, 94, 254, 0.32); /* 기본 그림자 */
-    --shadow-hover: 0 4px 20px -2px rgba(39, 94, 254, 0.5); /* 호버 시 그림자 */
-    --duration: 0.44s; /* 전환 시간 */
-    transform: translateY(0); /* 초기 변위 */
-    transition: transform var(--duration) ease, box-shadow var(--duration) ease;
+    transform: translateY(0);
+    transition: transform var(--duration, 0.3s) ease, box-shadow var(--duration, 0.3s) ease;
 }
 
+/* 로그인 버튼 스타일 */
 .login-btn {
-    background: linear-gradient(90deg, #00239C, #ED6A66);
+    background: linear-gradient(90deg, #084C7D, #EA8C2A); /* 배경색 재설정 */
     color: #ffffff;
     border: none;
-
-    /* 그림자 효과 추가 */
-    box-shadow: var(--shadow);
+    box-shadow: 0 2px 8px -1px rgba(39, 94, 254, 0.32); /* 그림자 추가 */
+    position: relative; /* 위치 재설정 */
+    overflow: hidden; /* 가상 요소로 인해 배경이 변경되지 않도록 설정 */
 }
 
-/* 로그인 버튼 호버 및 클릭 스타일 */
+/* 로그인 버튼 호버 스타일 */
 .login-btn:hover {
-    background: linear-gradient(90deg, #0030dd, #ffa9a1);
-    box-shadow: var(--shadow-hover); /* 호버 시 그림자 변화 */
-    transform: translateY(-4px); /* 호버 시 이동 */
+    background: linear-gradient(90deg, #084C7D, #e49c50); /* 호버 시 배경 변경 */
+    box-shadow: 0 4px 20px -2px #18517a67; /* 그림자 변화 */
+    transform: translateY(-4px); /* 버튼 살짝 위로 이동 */
 }
+
+/* 로그인 버튼 텍스트 정렬 */
+.login-btn div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 
 /* 회원가입 버튼 스타일 */
 .signup-btn {
     position: relative;
-    background: transparent;
+    background: white; /* 기본 배경색을 흰색으로 설정 */
     color: #00239C; 
     font-weight: bold;
     font-size: 0.9rem;
     padding: 0.5rem;
     cursor: pointer;
-    border-radius: 20px; /* 둥근 모서리 */
+    border-radius: 20px;
     width: 100%;
-    border: none;
+    border: 2px solid transparent; /* 테두리 기본 설정 */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* 애니메이션 추가 */
 }
 
 .signup-btn::before {
-    content: "SIGN UP"; /* 버튼 텍스트 */
+    content: "회원가입하기"; /* 버튼 텍스트 */
     position: absolute;
     inset: 0;
     display: flex;
@@ -188,7 +196,7 @@ button {
     justify-content: center;
     font-weight: bold;
     color: transparent;
-    background: linear-gradient(90deg, #00239C 2%, #ED6A66 100%); /* signup 텍스트 색상 */
+    background: linear-gradient(90deg, #084C7D 2%, #e49c50 100%); /* signup 텍스트 색상 */
     background-clip: text;
     -webkit-background-clip: text;
 }
@@ -199,7 +207,7 @@ button {
     inset: 0;
     border-radius: 20px;
     padding: 2px; 
-    background: linear-gradient(90deg, #00239C, #ED6A66); /* signup 박스 색상 */
+    background: linear-gradient(90deg, #084C7D, #EA8C2A); /* signup 박스 테두리 색상 */
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: destination-out;
@@ -208,11 +216,15 @@ button {
 
 /* 회원가입 버튼 호버 스타일 */
 .signup-btn:hover {
-    color: #ffffff; /* 텍스트 색상 변경 */
-    box-shadow: 0 4px 12px rgba(219, 228, 255, 0.359); /* 호버 시 그림자 추가 */
+    background: white; /* 호버 시에도 배경색을 흰색으로 유지 */
     transform: translateY(-2px); /* 살짝 위로 이동 */
-    
+    box-shadow: 0 4px 12px rgba(219, 228, 255, 0.359); /* 호버 시 그림자 추가 */
 }
+
+.signup-btn:hover::after {
+    background: linear-gradient(90deg, #084C7D, #EA8C2A); /* 테두리 색상 유지 */
+}
+
 
 
 

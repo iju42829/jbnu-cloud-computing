@@ -1,12 +1,15 @@
-
+@font-face {
+    font-family: 'SUIT-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_suit@1.0/SUIT-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Roboto Condensed", sans-serif;
-}
+    font-family: 'SUIT-Regular', sans-serif;}
 
-/* 배경 */
 body {
     display: flex;
     justify-content: center;
@@ -16,7 +19,7 @@ body {
 }
 
 /* 메인 컨테이너 */
-.signup-container {
+.register-container {
     background-color: #ffffff;
     padding: 2rem;
     width: 450px;
@@ -25,16 +28,15 @@ body {
     text-align: center;
     position: relative;
 }
-
-/* 상단 바 */
-.signup-container::before {
+  
+.register-container::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 8px;
-    background: linear-gradient(to left, #f3aeac, #ED6A66);
+    background: linear-gradient(to left, #dd9b54, #EA8C2A);
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
 }
@@ -53,14 +55,14 @@ h2 {
     margin-bottom: 0.5rem;
 }
 
-/* 부제목  */
+/* 부제목 */
 p.subtitle {
     font-size: 0.875rem;
     color: #777777;
     margin-bottom: 1.5rem;
 }
 
-/* 입력 필드  */
+/* 입력 필드 */
 label {
     font-size: 0.75rem;
     font-weight: bold;
@@ -70,7 +72,7 @@ label {
     margin-bottom: 0.3rem;
 }
 
-/* 입력 필드  */
+  
 input[type="text"],
 input[type="email"],
 input[type="password"] {
@@ -90,16 +92,16 @@ input[type="password"] {
     margin-bottom: 0.5rem;
 }
 
-/* 입력 필드 클릭 효과 */
+
 input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus {
     background-image: linear-gradient(#ffffff, #ffffff),
-                      linear-gradient(to left, #f3aeac, #ED6A66);
+                      linear-gradient(to left, #e6b98a, #EA8C2A);
     border: 2px solid transparent;
 }
 
-/* 회원가입 버튼*/
+/* 공통 버튼 스타일 */
 button {
     width: 100%;
     padding: 0.5rem;
@@ -108,16 +110,53 @@ button {
     cursor: pointer;
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
-    background: linear-gradient(90deg, #ED6A66, #00239C);
+    position: relative; 
+    overflow: hidden; 
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+.register-continue-btn {
+    background: linear-gradient(90deg, #084C7D, #EA8C2A);
     color: #ffffff;
     border: none;
     box-shadow: 0 2px 8px -1px rgba(39, 94, 254, 0.32);
-    transition: transform 0.44s ease, box-shadow 0.44s ease;
 }
 
-/* 회원가입 버튼 호버 효과 */
-button:hover {
-    background: linear-gradient(90deg, #ffa9a1, #0030dd);
-    box-shadow: 0 4px 20px -2px rgba(39, 94, 254, 0.5);
+.register-continue-btn div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.register-continue-btn:hover {
+    background: linear-gradient(90deg, #084C7D, #d4a36f);
+    box-shadow: 0 4px 20px -2px rgba(39, 94, 254, 0.32);
     transform: translateY(-4px);
+}
+
+/* Go to Login 버튼 */
+.register-login-btn {
+    background: white; /* 기본 배경 */
+    color: #084C7D; 
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 20px;
+    width: 100%;
+    border: 2px solid #084C7D; /* 테두리 설정 */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.register-login-btn:hover {
+    background: #f0f2f5; /* 호버 시 색상 변경 */
+    transform: translateY(-2px); /* 살짝 위로 이동 */
+    box-shadow: 0 4px 12px rgba(39, 94, 254, 0.32); /* 호버 시 그림자 추가 */
+}
+
+.register-login-btn span {
+    display: inline-block;
+    background: linear-gradient(90deg, #084C7D, #EA8C2A);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent; /* 텍스트만 보이게 설정 */
 }
