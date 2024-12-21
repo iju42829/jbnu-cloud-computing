@@ -21,13 +21,15 @@ function MainPage() {
   const navigate = useNavigate();  
   const location = useLocation();
   const {userInfo, options} = location.state || {};
-  const [currentFolderId, setCurrentFolderId] = useState(0);
+  const currentFolderId = folderHistory[folderHistory.length - 1];
   const [files, setFiles] = useState([]);
   const [folders, setFolders] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isMovePopupOpen, setMovePopupOpen] = useState(false);
   const [targetFolderId, setTargetFolderId] = useState("");
   const [selectedResource, setSelectedResource] = useState(null); // 이동할 리소스
+  const [folderHistory, setFolderHistory] = useState([0]); // 처음 폴더: 0 (루트)
+
 
 
 
@@ -102,22 +104,31 @@ const downloadFile = async (fileId, fileName) => {
 
 
   
-  const createFolder = async (name, parentFolderId) => {
-    try {
-      const response = await fetch(`/api/folders/${parentFolderId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
-      });
-      if (!response.ok) throw new Error("폴더 생성 실패");
-      const result = await response.json();
-      alert("폴더가 생성되었습니다.");
-      fetchFiles(parentFolderId); // 파일 목록 갱신
-    } catch (error) {
-      console.error(error.message);
-      alert("폴더 생성 중 오류가 발생했습니다.");
-    }
-  };
+
+const createFolder = async (name) => {
+  try {
+    // folderHistory[folderHistory.length - 1]이 현재 폴더 ID
+    const parentFolderId = folderHistory[folderHistory.length - 1];
+
+    const response = await fetch(`/api/folders/${parentFolderId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+    });
+    if (!response.ok) throw new Error("폴더 생성 실패");
+
+    const result = await response.json();
+    alert("폴더가 생성되었습니다.");
+
+    // 폴더 생성 후 갱신
+    fetchFiles(parentFolderId);
+
+  } catch (error) {
+    console.error(error.message);
+    alert("폴더 생성 중 오류가 발생했습니다.");
+  }
+};
+
   const searchFiles = async (query) => {
     try {
         const response = await fetch(`/api/file/search?filename=${encodeURIComponent(query)}`);
@@ -161,7 +172,6 @@ const downloadFile = async (fileId, fileName) => {
       const result = await response.json();
 
       // API 응답 구조: result.data.folders, result.data.files
-      // parentFolderId는 API가 별도로 준다고 가정
       const foldersData = result.data.folders || [];
       const filesData = result.data.files || [];
       
@@ -183,13 +193,16 @@ const downloadFile = async (fileId, fileName) => {
         id: file.fileId
       }));
 
-      // (수정됨) 폴더 & 파일 state 업데이트
+     
       setFolders(mappedFolders);
       setFiles(mappedFiles);
 
-      // (수정됨) 현재 폴더 & parentFolderId 갱신 (API가 준다고 가정)
-      setCurrentFolderId(folderId);
-      setParentFolderId(result.data.parentFolderId ?? null);
+      setFolderHistory((prev) => {
+        // 마지막 요소(현재 폴더)만 업데이트
+        const newHistory = [...prev];
+        newHistory[newHistory.length - 1] = folderId; 
+        return newHistory;
+      });
 
     } catch (error) {
       console.error(error.message);
@@ -347,22 +360,22 @@ const closeFolderPopup = () => {
 };
   
 // 폴더 생성 처리
+
 const handleCreateFolder = async () => {
   if (folderName.trim() === "") {
-      alert("폴더 이름을 입력하세요.");
-      return;
+    alert("폴더 이름을 입력하세요.");
+    return;
   }
-
   try {
-      await createFolder(folderName, currentFolderId); // 폴더 생성 API 호출
-      alert(`${folderName} 폴더가 생성되었습니다.`);
-      fetchFiles(currentFolderId); // 현재 경로의 파일 목록 갱신
-      closeFolderPopup();
+    // 더 이상 parentFolderId를 인자로 넘기지 않음
+    await createFolder(folderName);
+    closeFolderPopup();
   } catch (error) {
-      console.error("폴더 생성 오류:", error);
-      alert("폴더 생성 중 오류가 발생했습니다.");
+    console.error("폴더 생성 오류:", error);
+    alert("폴더 생성 중 오류가 발생했습니다.");
   }
 };
+
 
   //설정 팝업
   const [isSettingPopupOpen, setSettingPopupOpen] = useState(false);
@@ -440,17 +453,23 @@ const handleCreateFolder = async () => {
   };
   const handleDoubleClick = (item) => {
     if (item.type === "folder") {
-      // (수정됨) 폴더를 열 때, folderId 기반으로 fetchFiles
+      // 스택에 현재 폴더 기록 추가
+      setFolderHistory((prev) => [...prev, item.id]);
       fetchFiles(item.id);
     } else {
-      // 파일 미리보기
       setPreviewFile(item);
     }
   };
+  
   const handleGoBack = () => {
-    // (수정됨) API가 parentFolderId를 준다면 그걸로 fetchFiles
-    if (parentFolderId !== null) {
-      fetchFiles(parentFolderId);
+    if (folderHistory.length > 1) {
+      setFolderHistory((prev) => {
+        const newHistory = [...prev];
+        newHistory.pop();  // 현재 폴더 제거
+        const previousFolderId = newHistory[newHistory.length - 1];
+        fetchFiles(previousFolderId);
+        return newHistory;
+      });
     } else {
       alert("상위 폴더가 없습니다.");
     }
