@@ -12,4 +12,6 @@ public interface FileRepository extends JpaRepository<File, Long> {
     boolean existsByFileNameAndFolder(String fileName, Folder folder);
 
     Optional<File> findByIdAndCreateBy(Long fileId, String createBy);
+
+    List<File> findByFileNameContainingAndCreateBy(String name, String createBy);
 }

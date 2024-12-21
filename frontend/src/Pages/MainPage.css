@@ -217,8 +217,6 @@ main {
   transition: background-color 0.5s ease, transform 0.5s ease;
 }
 
-
-
 .main-container {
   flex-grow: 1;
   margin: 65px 0px 10px 0px;
@@ -480,11 +478,18 @@ main {
 
 .file-menu {
   position: absolute;
+
   background: #ffffff;
   border: 1px solid #ddd;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
+
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+
 }
 
 .file-menu ul {
@@ -496,6 +501,7 @@ main {
 .file-menu li {
   padding: 10px 15px;
   cursor: pointer;
+
   color: #333333;
   border-radius: 8px;
   transition: background-color 0.2s ease;
@@ -504,6 +510,14 @@ main {
 .file-menu li:hover {
   background-color: #007bff;
   color: #ffffff;
+
+  color: #333;
+}
+
+.file-menu li:hover {
+  background-color: #0078d4;
+  color: #fff;
+
 }
 
 .folder-container {
@@ -516,14 +530,20 @@ main {
   cursor: pointer;
   display: flex;
   align-items: center;
+
   transition: background-color 0.2s ease;
 }
 
 .folder-btn:hover {
   background-color: #f0f2f5;
   border-radius: 8px;
+
 }
 
 .folder-children {
   margin-left: 20px;
+
 }
+
+}
+
