@@ -29,7 +29,7 @@ public class FolderCommandServiceImpl implements FolderCommandService {
     public Long createFolder(Long parentFolderId, FolderCreateRequest folderCreateRequest, MemberSessionDto memberSessionDto) {
         Member member = memberService.getMemberEntityByUsername(memberSessionDto.getUsername());
 
-        Folder parentFolder = folderRepository.findById(parentFolderId).orElseThrow(FolderNotFoundException::new);
+        Folder parentFolder = folderRepository.findById(parentFolderId).orElseThrow(() -> new FolderNotFoundException("해당 폴더를 찾을 수 없습니다."));
 
         Folder folder = Folder.createFolder(folderCreateRequest.getName(), parentFolder, member);
 
