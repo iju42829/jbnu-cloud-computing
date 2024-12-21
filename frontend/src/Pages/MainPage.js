@@ -21,9 +21,28 @@ function MainPage() {
   const navigate = useNavigate();  
   const location = useLocation();
   const {userInfo, options} = location.state || {};
-  const [currentPath, setCurrentPath] = useState("/storage");
+  const [currentFolderId, setcurrentFolderId] = useState(0); // 루트 폴더를 0이라 가정
   const [files, setFiles] = useState([]);
   const [folders, setFolders] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isMovePopupOpen, setMovePopupOpen] = useState(false);
+  const [targetFolderId, setTargetFolderId] = useState("");
+  const [selectedResource, setSelectedResource] = useState(null); // 이동할 리소스
+
+  
+
+  const handleSearch = (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    if (query.trim() === "") {
+        // 검색어가 비어 있으면 전체 파일 목록을 불러옵니다.
+        fetchFiles();
+    } else {
+        // 검색어가 있으면 검색 API를 호출합니다.
+        searchFiles(query);
+    }
+};
 
  
   const uploadFile = async (file, folderId) => {
@@ -45,11 +64,13 @@ function MainPage() {
     }
   };
   
-  const downloadFile = async (fileId, fileName) => {
-    try {
+// 파일 다운로드 함수
+// 파일 다운로드 함수
+const downloadFile = async (fileId, fileName) => {
+  try {
       const response = await fetch(`/api/file/${fileId}`);
       if (!response.ok) throw new Error("파일 다운로드 실패");
-  
+
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -57,11 +78,28 @@ function MainPage() {
       a.download = fileName;
       a.click();
       window.URL.revokeObjectURL(url);
-    } catch (error) {
+      alert(`${fileName} 파일이 다운로드되었습니다.`);
+  } catch (error) {
       console.error(error.message);
       alert("파일 다운로드 중 오류가 발생했습니다.");
+  }
+};
+
+
+  const deleteFile = async (fileId) => {
+    try {
+        const response = await fetch(`/api/file/${fileId}`, {
+            method: "DELETE",
+        });
+        if (!response.ok) throw new Error("파일 삭제 실패");
+        alert("파일이 삭제되었습니다.");
+        fetchFiles(currentFolderId); // 파일 목록 갱신
+    } catch (error) {
+        console.error(error.message);
+        alert("파일 삭제 중 오류가 발생했습니다.");
     }
-  };
+};
+
 
   
   const createFolder = async (name, parentFolderId) => {
@@ -80,6 +118,24 @@ function MainPage() {
       alert("폴더 생성 중 오류가 발생했습니다.");
     }
   };
+  const searchFiles = async (query) => {
+    try {
+        const response = await fetch(`/api/file/search?filename=${encodeURIComponent(query)}`);
+        if (!response.ok) throw new Error("파일 검색 실패");
+        const result = await response.json();
+        setFiles(result.data.map(file => ({
+            name: file.fileName,
+            type: "file",
+            size: file.size,
+            lastModified: file.lastModifiedDate,
+            id: file.fileId,
+        })));
+    } catch (error) {
+        console.error(error.message);
+        alert("파일 검색 중 오류가 발생했습니다.");
+    }
+};
+
 
   const moveResource = async (resourceId, targetResourceId, resourceType) => {
     try {
@@ -90,14 +146,14 @@ function MainPage() {
       });
       if (!response.ok) throw new Error("리소스 이동 실패");
       alert("리소스가 성공적으로 이동되었습니다.");
-      fetchFiles(currentPath); // 파일 목록 갱신
+      fetchFiles(currentFolderId); // 파일 목록 갱신
     } catch (error) {
       console.error(error.message);
       alert("리소스 이동 중 오류가 발생했습니다.");
     }
   };
 
-  const fetchFiles = async (folderId = "root") => {
+  const fetchFiles = async (folderId = 0) => {
     try {
       const response = await fetch(`/api/main?folderId=${folderId}`);
       if (!response.ok) throw new Error("파일 목록 조회 실패");
@@ -129,13 +185,112 @@ function MainPage() {
       alert("파일 목록을 불러오는 중 오류가 발생했습니다.");
     }
   };
+
+  const shareFile = async (fileId) => {
+    try {
+      const response = await fetch(`/api/fileShare`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileId, shareExpiration: "ONE_HOUR" }),
+      });
+      if (!response.ok) throw new Error("파일 공유 실패");
   
+      const result = await response.json();
+      const shareUrl = result.data.url;
+  
+      // 알림 창으로 공유 링크 표시
+      alert(`공유 링크: ${shareUrl}\n(클립보드에 복사되었습니다!)`);
+  
+      // 클립보드에 링크 복사
+      navigator.clipboard.writeText(shareUrl);
+    } catch (error) {
+      console.error(error.message);
+      alert("파일 공유 중 오류가 발생했습니다.");
+    }
+  };
+  
+
+const fetchSharedFiles = async () => {
+    try {
+        const response = await fetch(`/api/fileShare`);
+        if (!response.ok) throw new Error("공유 파일 목록 조회 실패");
+        const result = await response.json();
+        setFiles(result.data.fileShares.map(share => ({
+            name: share.fileName,
+            type: "file",
+            size: share.size,
+            shared: true,
+            id: share.fileShareId,
+        })));
+    } catch (error) {
+        console.error(error.message);
+        alert("공유 파일 목록 조회 중 오류가 발생했습니다.");
+    }
+};
+
+const deleteFolder = async (folderId) => {
+  try {
+      const response = await fetch(`/api/folders/${folderId}`, {
+          method: "DELETE",
+      });
+      if (!response.ok) throw new Error("폴더 삭제 실패");
+      alert("폴더가 삭제되었습니다.");
+      fetchFiles(currentFolderId); // 파일 목록 갱신
+  } catch (error) {
+      console.error(error.message);
+      alert("폴더 삭제 중 오류가 발생했습니다.");
+  }
+};
+const deleteSharedFile = async (fileShareId) => {
+  try {
+      const response = await fetch(`/api/fileShare/${fileShareId}`, {
+          method: "DELETE",
+      });
+      if (!response.ok) throw new Error("공유 파일 삭제 실패");
+      alert("공유 파일이 삭제되었습니다.");
+      fetchSharedFiles(); // 공유 파일 목록 갱신
+  } catch (error) {
+      console.error(error.message);
+      alert("공유 파일 삭제 중 오류가 발생했습니다.");
+  }
+};
 
   
 
-  useEffect(() => {
-    updatePath("/storage");
-  },[]);
+useEffect(() => {
+  // 루트 폴더 0 기준으로 fetch
+  fetchFiles(0);
+}, []);
+
+  
+  // 이동 팝업 열기
+const openMovePopup = (resource) => {
+  setSelectedResource(resource);
+  setMovePopupOpen(true);
+};
+
+// 이동 팝업 닫기
+const closeMovePopup = () => {
+  setMovePopupOpen(false);
+  setTargetFolderId("");
+};
+
+const handleMoveResource = async () => {
+  if (!selectedResource || !targetFolderId) {
+      alert("이동할 대상 및 경로를 선택하세요.");
+      return;
+  }
+
+  try {
+      await moveResource(selectedResource.id, targetFolderId, selectedResource.type);
+      alert(`${selectedResource.name}가 이동되었습니다.`);
+      fetchFiles(currentFolderId); // 현재 경로의 파일 목록 갱신
+      closeMovePopup();
+  } catch (error) {
+      console.error("리소스 이동 오류:", error);
+      alert("리소스 이동 중 오류가 발생했습니다.");
+  }
+};
 
   const updatePath = async (path) => {
     console.log(`${path}`);
@@ -145,7 +300,7 @@ function MainPage() {
       }
       const data = await response.json();
       setFiles(data);
-      setCurrentPath(path);
+      setcurrentFolderId(path);
     }
 
   //드롭다운 관리 ------------------------------------------------------------------
@@ -165,92 +320,39 @@ function MainPage() {
       }
     });
   }
-  const [fileMenu, setFileMenu] = useState({isOpen: false, position: {}, file: null});
-  //파일 메뉴 드롭다운
-  const handleOpenMenu = (event, file) => {
-    event.preventDefault(); // 기본 컨텍스트 메뉴 방지
-    setFileMenu({
-      isOpen: true,
-      position: { x: event.clientX, y: event.clientY },
-      file: file,
-    });
-  };
+// 새 폴더 팝업 관리
+const [isFolderPopupOpen, setFolderPopupOpen] = useState(false);
+const [folderName, setFolderName] = useState("");
 
-  const closeFileMenu = () => {
-    setFileMenu({ isOpen: false, position: {}, file: null });
-  };
-
-  const handleMenuClick = (action) => {
-    const file = fileMenu.file;
-    console.log(`${action} clicked for`, file);
-    closeFileMenu();
-  };
-
-  //사이드 폴더 관리 드롭다운
-  const [openFolders, setOpenFolders] = useState({});
-  // 드롭다운 토글 함수
-  const toggleFolder = (path) => {
-    setOpenFolders((prevState) => ({
-      ...prevState,
-      [path]: !prevState[path],
-    }));
-  };
-  // 드롭다운 트리 렌더링 함수
-  const renderFolderTree = (folderList, currentPath = "/storage") => {
-    return folderList.map((item) => {
-      if (item.type === "folder") {
-        const folderPath = `${currentPath}/${item.name}`;
-        return (
-          <div key={folderPath} className="folder-container">
-            <button
-              className="folder-btn"
-              onClick={() => toggleFolder(folderPath)}
-            >
-              <img
-                src={`image/${openFolders[folderPath] ? "fold" : "spread"}.png`}
-                className="sideimg"
-                alt="folder-toggle"
-              />
-              {item.name}
-            </button>
-            {openFolders[folderPath] && item.children && (
-              <div className="folder-children">
-                {renderFolderTree(item.children, folderPath)}
-              </div>
-            )}
-          </div>
-        );
-      }
-      return null; // 파일은 표시하지 않음
-    });
-  };
-
-  //팝업창 관리 --------------------------------------------------------------------
-  //새 폴더 팝업
-  const [isFolderPopupOpen, setFolderPopupOpen] = useState(false);
-  const [folderName, setFolderName] = useState("");
-  const openFolderPopup = () => {
+// 팝업 열기
+const openFolderPopup = () => {
     setFolderPopupOpen(true);
-  };
-  const closeFolderPopup = () => {
+};
+
+// 팝업 닫기
+const closeFolderPopup = () => {
     setFolderPopupOpen(false);
     setFolderName(""); // 입력 필드 초기화
-  };
-  const handleCreateFolder = () => {
-    console.log(`새 폴더 이름: ${folderName}`);
-    if (folderName.trim() === '') {
-      alert("폴더 이름을 입력하세요.")
+};
+  
+// 폴더 생성 처리
+const handleCreateFolder = async () => {
+  if (folderName.trim() === "") {
+      alert("폴더 이름을 입력하세요.");
       return;
-    }
-    const newFolder = {
-      name: folderName,
-      type: "folder",
-      children: []
-    };
-    setFiles((prevFiles) => [...prevFiles, newFolder]);
-    // 데이터베이스 적용 로직 추가
-    closeFolderPopup(); // 팝업 닫기
-  };
+  }
+
+  try {
+      await createFolder(folderName, currentFolderId); // 폴더 생성 API 호출
+      alert(`${folderName} 폴더가 생성되었습니다.`);
+      fetchFiles(currentFolderId); // 현재 경로의 파일 목록 갱신
+      closeFolderPopup();
+  } catch (error) {
+      console.error("폴더 생성 오류:", error);
+      alert("폴더 생성 중 오류가 발생했습니다.");
+  }
+};
+
   //설정 팝업
   const [isSettingPopupOpen, setSettingPopupOpen] = useState(false);
   const openSettingPopup = () => {
@@ -262,17 +364,19 @@ function MainPage() {
     setSettingPopupOpen(false);
   }
   // 파일 업로드 팝업
-  const handleFileUpload = (event) => {
+  const handleFileUpload = async (event) => {
     const uploadedFiles = Array.from(event.target.files); // 선택된 파일 배열
-    const newFiles = uploadedFiles.map((file) => ({
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      lastModified: file.lastModified,
-    }));
-    setFiles((prevFiles) => [...prevFiles, ...newFiles]); // 기존 파일 목록에 추가
-    //업로드 로직 추가
-  };
+
+    for (const file of uploadedFiles) {
+        try {
+            // 서버로 파일 업로드
+            await uploadFile(file, currentFolderId);
+        } catch (error) {
+            console.error(`파일 업로드 중 오류 발생: ${file.name}`, error);
+        }
+    }
+};
+
 
   //정렬 관리 ----------------------------------------------------------------------
   const [sortKey, setSortKey] = useState("name"); // 기본 정렬 기준
@@ -311,7 +415,6 @@ function MainPage() {
     if (!event.target.closest("tr")) { // 클릭한 곳이 파일/폴더가 아닌 경우에만 선택 해제
       setSelectedFiles([]);
     }
-    closeFileMenu();
   };
   const handleClick = (file, event) => {
     if (event.ctrlKey) {// Ctrl 누르고 클릭하면 다중 선택
@@ -324,26 +427,22 @@ function MainPage() {
       setSelectedFiles([file]);// 단일 선택
     }
   };
-  const handleDoubleClick = (file) => { // 더블 클릭 이벤트
-    if (file.type === "folder") {
-      updatePath(`${currentPath}/${file.name}`);
+  const handleDoubleClick = (item) => { // 더블 클릭 이벤트
+    if (item.type === "folder") {
+      updatePath(`${currentFolderId}/${item.name}`);
     } else {
       // 파일인 경우 미리보기 표시
-      setPreviewFile(file);
+      setPreviewFile(item);
     }
   };
   const handleGoBack = () => {
-    if (currentPath == "/bin"){
-      updatePath("/storage");
-    }
-    else if((currentPath !== "/storage")&&(currentPath !== "/bin")){
-      const parentPath = currentPath.split("/").slice(0,-1).join("/") || "/storage";
+    if(currentFolderId !== "/storage"){
+      const parentPath = currentFolderId.split("/").slice(0,-1).join("/") || "/storage";
       updatePath(parentPath);
     }
-  } 
+  }
   //메인 페이지 --------------------------------------------------------------------
   return (
-
     <div className="container-wrapper">
 
         <body onClick={handleContainerClick}>
@@ -354,8 +453,13 @@ function MainPage() {
                 <h className="logofont"></h>
               </button>        
               <div className="searchbar">
-                <img src="image/search.png" className="searchimg" alt="search"/>
-                <input className="searchtext" placeholder="검색"></input>
+                  <img src="image/search.png" className="searchimg" alt="search" />
+                  <input
+                      className="searchtext"
+                      placeholder="검색"
+                      value={searchQuery}
+                      onChange={handleSearch}
+                  />
               </div>
                 <>
                   {isDropdownView && (
@@ -412,139 +516,6 @@ function MainPage() {
                 </div>
                 <button className="side-menu" >
                   <img src="image/trash.png" className="sideimg" alt="bin"/>휴지통
-=======
-    <body onClick={handleContainerClick}>
-        {/* 헤더 */}
-        <header>
-          <button className="logobtn">
-            <img src="image/logo.png" className="logoimg" alt="logo"/>
-            <h className="logofont">CLOUDBOX</h>
-          </button>        
-          <div className="searchbar">
-            <img src="image/search.png" className="searchimg" alt="search"/>
-            <input className="searchtext" placeholder="검색"></input>
-          </div>
-          <>
-            {isDropdownView && <button className="userbtn" onClick={openSettingPopup}>계정관리</button>}
-            {isDropdownView && <button className="userbtn" onClick={() => navigate('/')}>로그아웃</button>}
-            <button className="userbtn" onClick={viewDropdown}>
-              <img src={userInfo?.profileImage} onError={(e) => {e.target.onerror = null; 
-                e.target.src = "image/user.png"}} className="headerimg" alt="user"/> 
-              <h>{userInfo?.name}</h>
-            </button>
-          </>
-        </header>
-        {/* 메인 부분 시작 */}
-        <main>
-          {/* 사이드 메뉴 시작 */}
-          <div className="side-container">
-            <button className="side-menu" onClick={openFolderPopup}>
-              <img src="image/add-folder.png" className="sideimg" alt="folder"/>새 폴더
-            </button>
-            <button className="side-menu">
-              <img src="image/file-upload.png" className="sideimg" alt="file"/>
-              <label htmlFor="file-upload" style={{ cursor: "pointer" }}>
-                파일 업로드
-              </label>
-              <input
-                id="file-upload"
-                type="file"
-                multiple
-                style={{ display: "none" }}
-                onChange={handleFileUpload}
-              />
-            </button>    
-            <div className="storage-viewer">
-              <button className="storage-item">
-                <img src={`image/spread.png`}  className="sideimg" alt="spread"/>
-                <h >storage</h>   
-              </button>
-              (){renderFolderTree(files)}  
-            </div>
-            <button className="side-menu" onClick={() => updatePath("/bin")}>
-              <img src="image/trash.png" className="sideimg" alt="bin"/>휴지통
-            </button>
-            <button className="side-menu" onClick={openSettingPopup}>
-              <img src="image/setting.png" className="sideimg" alt="setting"/>설정
-            </button>
-          </div>
-          {/* 사이드 메뉴 끝 메인 컨테이너 시작*/}
-          <div className="main-container">
-            {/* 최근 파일 부분 할까 말까
-            <div className="recent-container">최근 파일 </div> */}
-            {/* 파일 부분 시작 */}
-            <div className="all-file-container">
-              {/* 현재 표시되는 파일 경로 */}
-              <h >{currentPath}</h>
-              
-              <table>
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th onClick={() => handleSort("name")}>
-                      파일 이름 {sortKey === "name" && (sortOrder === "asc" ? "▲" : "▼")}
-                    </th>
-                    <th onClick={() => handleSort("size")}>
-                      파일 크기 {sortKey === "size" && (sortOrder === "asc" ? "▲" : "▼")}
-                    </th>
-                    <th>파일 유형</th>
-                    <th onClick={() => handleSort("lastModified")}>
-                      마지막 수정 날짜 {sortKey === "lastModified" && (sortOrder === "asc" ? "▲" : "▼")}
-                    </th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                {currentPath !== "/storage" && (
-                  <tr>
-                  <td onDoubleClick={handleGoBack} className="back-btn" colSpan='6'>
-                    {currentPath.split("/").slice(0,-1).join("/") || "내 저장소로 이동"}
-                    </td>
-                  </tr>
-                )}
-                {sortedFiles.map((file, index) => (
-                  <tr key={index} onClick={(e) => handleClick(file, e)}
-                  onDoubleClick={() => handleDoubleClick(file)}
-                  onContextMenu={(event) =>handleOpenMenu(event, file)}
-                  className={selectedFiles.includes(file) ? "selected" : ""}>
-                    <td className="file-icon-column">
-                      <img src={`image/${file.type === "folder" ? "folder" : "file"}.png`}
-                        alt={file.type} className="file-icon"/>
-                    </td>
-                    <td>{file.name}</td>
-                    <td>{file.type === "folder" ? "-" : `${(file.size / 1024).toFixed(2)} KB`}</td>
-                    <td>{file.type}</td>
-                    <td>{file.type === "folder" ? "-" : new Date(file.lastModified).toLocaleString()} </td>
-                    <td className="menu-btn-column">
-                      <button className="menu-btn" onClick={(event) => handleOpenMenu(event, file)}>
-                        <img src="image/menu.png" alt="Menu" />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-              </table>
-            </div>
-            {/* 파일 부분 끝 */}
-          </div>
-        </main>
-        {/* 메인 부분 끝 팝업 부분 시작*/}
-        {/* 새 폴더 팝업 */}
-        {isFolderPopupOpen && (
-          <div className="popup-overlay">
-            <div className="popup">
-              <h2>새 폴더 만들기</h2>
-              <input
-                type="text"
-                placeholder="폴더 이름을 입력하세요"
-                value={folderName}
-                onChange={(e) => setFolderName(e.target.value)}
-                className="popup-input"
-              />
-              <div className="popup-buttons">
-                <button onClick={handleCreateFolder} className="popup-btn">
-                  확인
-
                 </button>
                 <button className="side-menu" onClick={openSettingPopup}>
                   <img src="image/setting.png" className="sideimg" alt="setting"/>설정
@@ -557,7 +528,7 @@ function MainPage() {
                 {/* 파일 부분 시작 */}
                 <div className="all-file-container">
                   {/* 현재 표시되는 파일 경로 */}
-                  <h >{currentPath}</h>
+                  <h >{currentFolderId}</h>
                   
                   <table>
                     <thead>
@@ -577,32 +548,93 @@ function MainPage() {
                       </tr>
                     </thead>
                     <tbody>
-                    {currentPath !== "/storage" && (
-                      <tr>
-                      <td onDoubleClick={handleGoBack} className="back-btn" colSpan='6'>
-                        /..
-                        </td>
-                      </tr>
-                    )}
-                    {sortedFiles.map((file, index) => (
-                      <tr key={index} onClick={(e) => handleClick(file, e)}
-                      onDoubleClick={() => handleDoubleClick(file)}
-                      className={selectedFiles.includes(file) ? "selected" : ""}>
-                        <td className="file-icon-column">
-                          <img src={`image/${file.type === "folder" ? "folder" : "file"}.png`}
-                            alt={file.type} className="file-icon"/>
-                        </td>
-                        <td>{file.name}</td>
-                        <td>{file.type === "folder" ? "-" : `${(file.size / 1024).toFixed(2)} KB`}</td>
-                        <td>{file.type}</td>
-                        <td>{file.type === "folder" ? "-" : new Date(file.lastModified).toLocaleString()} </td>
-                        <td className="menu-btn-column">
-                          <button className="menu-btn">
-                            <img src="image/menu.png" alt="Menu" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                      {currentFolderId !== "/storage" && (
+                          <tr>
+                              <td onDoubleClick={handleGoBack} className="back-btn" colSpan="6">
+                                  /..
+                              </td>
+                          </tr>
+                      )}
+                        {sortedFiles.map((file, index) => (
+                        <tr
+                          key={index}
+                          onClick={(e) => handleClick(file, e)}
+                          onDoubleClick={() => handleDoubleClick(file)}
+                          className={selectedFiles.includes(file) ? "selected" : ""}
+                        >
+                          <td className="file-icon-column">
+                            <img
+                              src={`image/${file.type === "folder" ? "folder" : "file"}.png`}
+                              alt={file.type}
+                              className="file-icon"
+                            />
+                          </td>
+                          <td>{file.name}</td>
+                          <td>{file.type === "folder" ? "-" : `${(file.size / 1024).toFixed(2)} KB`}</td>
+                          <td>{file.type}</td>
+                          <td>
+                            {file.type === "folder" ? "-" : new Date(file.lastModified).toLocaleString()}
+                          </td>
+                          <td className="menu-btn-column">
+                            {file.shared ? (
+                              // 공유 파일 삭제 버튼 추가
+                              <button
+                                className="menu-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation(); // 클릭 이벤트 전파 방지
+                                  if (window.confirm(`정말로 공유 파일 ${file.name}을(를) 삭제하시겠습니까?`)) {
+                                    deleteSharedFile(file.id); // 공유 파일 삭제 함수 호출
+                                  }
+                                }}
+                              >
+                                <img src="image/delete.png" alt="Delete Shared File" />
+                              </button>
+                            ) : (
+                              <>
+                                {file.type !== "folder" && (
+                                  <>
+                                    {/* 다운로드 버튼 */}
+                                    <button
+                                      className="menu-btn"
+                                      onClick={(e) => {
+                                        e.stopPropagation(); // 클릭 이벤트 전파 방지
+                                        downloadFile(file.id, file.name);
+                                      }}
+                                    >
+                                      <img src="image/download.png" alt="Download" />
+                                    </button>
+
+                                    {/* 공유 버튼 */}
+                                    <button
+                                      className="menu-btn"
+                                      onClick={(e) => {
+                                        e.stopPropagation(); // 클릭 이벤트 전파 방지
+                                        shareFile(file.id);
+                                      }}
+                                    >
+                                      <img src="image/share.png" alt="Share" />
+                                    </button>
+                                  </>
+                                )}
+
+                                {/* 일반 파일 삭제 버튼 */}
+                                <button
+                                  className="menu-btn"
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // 클릭 이벤트 전파 방지
+                                    if (window.confirm(`정말로 ${file.name} 파일을 삭제하시겠습니까?`)) {
+                                      deleteFile(file.id);
+                                    }
+                                  }}
+                                >
+                                  <img src="image/delete.png" alt="Delete" />
+                                </button>
+                              </>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+       
                   </tbody>
                 </table>
               </div>
@@ -633,6 +665,34 @@ function MainPage() {
               </div>
             </div>
           )}
+          {/* 이동 팝업 */}
+          {isMovePopupOpen && (
+            <div className="popup-overlay">
+              <div className="popup">
+                <h2>이동할 폴더 선택</h2>
+                <select
+                  value={targetFolderId}
+                  onChange={(e) => setTargetFolderId(e.target.value)}
+                  className="popup-select"
+                >
+                  <option value="">폴더를 선택하세요</option>
+                  {folders.map((folder) => (
+                    <option key={folder.id} value={folder.id}>
+                      {folder.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="popup-buttons">
+                  <button onClick={handleMoveResource} className="popup-btn">
+                    확인
+                  </button>
+                  <button onClick={closeMovePopup} className="popup-btn">
+                    취소
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           {/* 설정 팝업 */}
           {isSettingPopupOpen && (
             <div class="popup-overlay">
@@ -649,6 +709,7 @@ function MainPage() {
               </div>
             </div>
           )}
+
           {/* 미리보기 창 */}
           {previewFile && (
             <div className="preview-overlay" onClick={() => setPreviewFile(null)}>
@@ -660,40 +721,10 @@ function MainPage() {
                 <button onClick={() => setPreviewFile(null)}>닫기</button>
               </div>
             </div>
-
           )}
           {/* 팝업 부분 끝 */}
       </body>
     </div>
-
-          </div>
-        )}
-        {/* 드롭다운 메뉴 */}
-        {(fileMenu.isOpen && currentPath !== "/bin") && (
-                <div className="file-menu" style={{ top: fileMenu.position.y, left: fileMenu.position.x }}>
-                  <ul>
-                    {fileMenu.file.type !== "folder" && (
-                      <li onClick={() => handleMenuClick("download")}>파일 다운로드</li>
-                    )}
-                    <li onClick={() => handleMenuClick("move")}>이동</li>
-                    <li onClick={() => handleMenuClick("copy")}>복사</li>
-                    <li onClick={() => handleMenuClick("delete")}>삭제</li>
-                    <li onClick={() => handleMenuClick("properties")}>속성 보기</li>
-                  </ul>
-                </div>
-              )}
-              {(fileMenu.isOpen && currentPath == "/bin") && (
-                <div className="file-menu" style={{ top: fileMenu.position.y, left: fileMenu.position.x }}>
-                  <ul>
-                    <li onClick={() => handleMenuClick("file-move")}>파일 복원</li>
-                    <li onClick={() => handleMenuClick("P-delete")}>영구 삭제</li>
-                    <li onClick={() => handleMenuClick("properties")}>속성 보기</li>
-                  </ul>
-                </div>
-              )}
-        {/* 팝업 부분 끝 */}
-    </body>
-
   );
 }
 
