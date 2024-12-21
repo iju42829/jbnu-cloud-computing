@@ -12,6 +12,7 @@ services:
       DB_USERNAME: "${DB_USERNAME}"
       DB_PASSWORD: "${DB_PASSWORD}"
       BUCKET_NAME: "${BUCKET_NAME}"
+      SERVER_URL: "${SERVER_URL}"
 
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
