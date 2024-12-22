@@ -111,6 +111,7 @@ BUCKET_NAME=                              # AWS S3 버킷 이름
 
 ```plaintext
 # API URL
+REACT_APP_API_URL=                       # 백엔드 엔드포인트
 ```
 
 ### 4. Nginx 설치 및 설정
